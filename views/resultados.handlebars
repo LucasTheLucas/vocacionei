@@ -1,0 +1,119 @@
+<div>
+  <div class="container">
+    <canvas id="meuGrafico" width="100px" height="40px"></canvas>
+  </div>
+</div>
+
+
+  <script>
+    const dadosBrutos = JSON.parse(localStorage.getItem("valores"));
+
+    if(dadosBrutos == null)
+    {
+      window.location.href = `http://localhost:8081/`
+    }
+
+    const dados = dadosBrutos.slice(6, dadosBrutos.length - 6);
+
+    console.log(dados)
+    
+    let R = 0;
+    let I = 0;
+    let A = 0;
+    let S = 0;
+    let E = 0;
+    let C = 0;
+
+    for (const dado of dados)
+    {
+        valor = Number(dado.valor)
+        switch (dado.tipo)
+        {
+          case "R":
+            R = R + valor
+            break; 
+          case "I":
+            I = I + valor
+            break; 
+          case "A":
+            A = A + valor
+            break; 
+          case "S":
+            S = S + valor
+            break; 
+          case "E":
+            E = E + valor
+            break; 
+          case "C":
+            C = C + valor
+            break; 
+        }
+    }
+
+    console.log(R);
+    console.log(I)
+    console.log(A)
+    console.log(S)
+    console.log(E)
+    console.log(C)
+
+    const ctx = document.getElementById("meuGrafico").getContext("2d");
+    const meuGrafico = new Chart(ctx, {
+      type: "bar",
+      data: {
+        labels: [""],
+        datasets: [
+          {
+            label: "R",
+            data: [R],
+            backgroundColor: "rgba(54, 162, 235, 0.6)",
+            borderColor: "rgba(54, 162, 235, 1)",
+            borderWidth: 1,
+          },
+          {
+            label: "I",
+            data: [I],
+            backgroundColor: "rgba(54, 162, 235, 0.6)",
+            borderColor: "rgba(54, 162, 235, 1)",
+            borderWidth: 1,
+          },
+          {
+            label: "A",
+            data: [A],
+            backgroundColor: "rgba(54, 162, 235, 0.6)",
+            borderColor: "rgba(54, 162, 235, 1)",
+            borderWidth: 1,
+          },
+          {
+            label: "S",
+            data: [S],
+            backgroundColor: "rgba(54, 162, 235, 0.6)",
+            borderColor: "rgba(54, 162, 235, 1)",
+            borderWidth: 1,
+          },
+          {
+            label: "E",
+            data: [E],
+            backgroundColor: "rgba(54, 162, 235, 0.6)",
+            borderColor: "rgba(54, 162, 235, 1)",
+            borderWidth: 1,
+          },
+          {
+            label: "C",
+            data: [C],
+            backgroundColor: "rgba(54, 162, 235, 0.6)",
+            borderColor: "rgba(54, 162, 235, 1)",
+            borderWidth: 1,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: { beginAtZero: true, max: 75 },
+        },
+      },
+    });
+
+    localStorage.clear();
+  </script>

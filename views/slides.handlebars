@@ -1,0 +1,160 @@
+<div class="container text-center">        
+  <div class="mt-5">
+    <div class="container-md">
+      <div class="bg-dark" style="width:400px; height: 320px; justify-self: center;">
+          <div class="bg-dark" style="width: 400px; display: flex;">
+            
+            <a href="http://localhost:8081/slides/1">
+              <button type="button" class="btn btn-secondary bg-dark btn border-0" onclick="resetarTeste()"><i class="bi bi-arrow-clockwise"></i> Refazer</button>
+            </a>
+          </div>
+        <img id="imagem" src="{{{imagem.imagem}}}" style="width: 400px; object-fit:cover;" onerror="this.style.display='none';">
+      </div>
+      <div class="d-flex justify-content-center">
+          <div style="width: 400px;">
+              <div class="progress mt-3">
+                  <div id="barra-progresso" 
+                      class="progress-bar" 
+                      role="progressbar" 
+                      aria-valuenow="0" 
+                      aria-valuemin="0" 
+                      aria-valuemax="8" 
+                      style="width: 100%;">
+                  </div>
+              </div>
+          </div>
+      </div>
+    </div>
+
+      <div class="py-5">
+          <div id="botoes" class="btn-group" style="display: flex; justify-self: center; justify-content: space-between; width: 400px;">
+              <button class="btn btn-primary" data-value="1" onclick="Pontuar(1)">1</button>
+              <button class="btn btn-primary" data-value="2" onclick="Pontuar(2)">2</button>
+              <button class="btn btn-primary" data-value="3" onclick="Pontuar(3)">3</button>
+              <button class="btn btn-primary" data-value="4" onclick="Pontuar(4)">4</button>
+              <button class="btn btn-primary" data-value="5" onclick="Pontuar(5)">5</button>
+          </div>
+      </div>
+
+  </div>
+</div>
+
+<script>
+const imagemAtual = {id: {{{json imagem}}}.id, tipo: {{{json imagem}}}.tipo};
+const slide = document.getElementById("imagem");
+
+let trocandoDePagina = false;
+
+const botoes = document.querySelectorAll("#botoes button");
+const barra = document.getElementById("barra-progresso");
+
+let pontuacaoDada = false;
+let tempoRestante = 8;
+
+
+function Pontuar(val)
+{
+    if(pontuacaoDada) return
+    pontuacaoDada = true;
+    salvarLocalStorage(val);
+}
+
+function salvarLocalStorage(val)
+{
+    let valores = JSON.parse(localStorage.getItem("valores")) || [];
+    valores.push(
+      {
+        id:imagemAtual.id,
+        tipo:imagemAtual.tipo,
+        valor: val
+      });
+    localStorage.setItem("valores", JSON.stringify(valores));
+    console.log(localStorage)
+    
+    const pathParts = window.location.pathname.split('/');
+    const id = parseInt(pathParts[pathParts.length - 1]) + 1;
+
+    if(id > 102)
+    {
+      salvarResultadosFinais()
+      window.location.href = `http://localhost:8081/resultados`
+    }
+    else
+    {
+      window.location.href = `http://localhost:8081/slides/${id}`
+    }    
+}
+
+function resetarTeste()
+{
+  trocandoDePagina = true;
+  localStorage.removeItem("valores");
+}
+
+function salvarResultadosFinais()
+{
+  const pessoaId = JSON.parse(localStorage.getItem("pessoaId"));
+  const dadosBrutos = JSON.parse(localStorage.getItem("valores"));
+
+    if(dadosBrutos == null)
+    {
+      window.location.href = `http://localhost:8081/`
+    }
+
+    const dados = dadosBrutos.slice(6, dadosBrutos.length - 6);
+
+    let R = 0;
+    let I = 0;
+    let A = 0;
+    let S = 0;
+    let E = 0;
+    let C = 0;
+
+    for (const dado of dados)
+    {
+        valor = Number(dado.valor)
+        switch (dado.tipo)
+        {
+          case "R":
+            R = R + valor
+            break; 
+          case "I":
+            I = I + valor
+            break; 
+          case "A":
+            A = A + valor
+            break; 
+          case "S":
+            S = S + valor
+            break; 
+          case "E":
+            E = E + valor
+            break; 
+          case "C":
+            C = C + valor
+            break; 
+        }
+    }
+
+    fetch("/updatealuno",
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body:JSON.stringify({id: pessoaId, resr: R, resi: I, resa: A, ress: S, rese: E, resc: C})
+    })
+}
+
+setInterval(() => {
+    if(!trocandoDePagina)
+    {
+      if (tempoRestante > 0) {
+        tempoRestante--;
+        barra.style.width = (tempoRestante / 8 * 100) + "%";
+        barra.setAttribute("aria-valuenow", tempoRestante);
+      } else {
+          barra.style.width = "100%";
+          Pontuar(0);
+      }
+    }
+}, 1000);
+</script>
