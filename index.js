@@ -54,7 +54,7 @@ app.post("/addaluno", function (req, res) {
     termos: req.body.termos,
   })
     .then(function (pessoa) {
-      res.json({ id: pessoa.id });
+      res.json({ id: pessoa.id });      
     })
     .catch(function (err) {
       res.send("FALHA AO CADASTRAR: " + err);
@@ -63,7 +63,7 @@ app.post("/addaluno", function (req, res) {
 
 app.post("/updatealuno", function (req, res)
 {
-  const {id, resr, resi, resa, ress, rese, resc} = req.body
+  const {id, resr, resi, resa, ress, rese, resc, totalb, totalv} = req.body
   try
   {
     Pessoa.update(
@@ -73,7 +73,9 @@ app.post("/updatealuno", function (req, res)
       resa: resa,
       ress: ress,
       rese: rese,
-      resc: resc
+      resc: resc,
+      totalb: totalb,
+      totalv: totalv
     },
     {
       where: { id: id }

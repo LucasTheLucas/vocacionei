@@ -3,7 +3,6 @@
     <h2 class="mb-4">Cadastro</h2>
 
     <form action="/addaluno" method="POST" id="cadastroForm">
-
       <div class="mb-3">
         <label class="form-label">Nome</label>
         <input type="text" class="form-control" name="nome" required />
@@ -14,7 +13,6 @@
           <label class="form-label">Email</label>
           <input type="email" class="form-control" name="email" required />
         </div>
-
         <div class="col-md-6">
           <label class="form-label">Contato</label>
           <input type="text" class="form-control" name="contato" required />
@@ -29,7 +27,6 @@
             <option value="F">Feminino</option>
           </select>
         </div>
-
         <div class="col-md-6">
           <label class="form-label">Data de nascimento</label>
           <input type="date" class="form-control" name="nasc" required />
@@ -41,26 +38,19 @@
           <label class="form-label">Nome responsável</label>
           <input type="text" class="form-control" name="responsavel" required />
         </div>
-
         <div class="col-md-6">
           <label class="form-label">Contato do responsável</label>
-          <input
-            type="text"
-            class="form-control"
-            name="responsavelcontato"
-            required
-          />
+          <input type="text" class="form-control" name="responsavelcontato" required />
         </div>
       </div>
 
       <div class="row mb-3">
         <div class="col-md-6">
           <label class="form-label">Instituição de ensino</label>
-          <select class="form-select" name="ensino">
+          <select id="ensino" class="form-select" name="ensino">
             <option value="1">Dado Mocado</option>
           </select>
         </div>
-
         <div class="col-md-6">
           <label class="form-label">Série</label>
           <select class="form-select" name="serie">
@@ -78,7 +68,6 @@
             <option value="1">Rua</option>
           </select>
         </div>
-
         <div class="col-md-2">
           <label class="form-label">Número</label>
           <input type="number" class="form-control" name="numero" required />
@@ -90,49 +79,41 @@
           <label class="form-label">Senha</label>
           <input type="password" class="form-control" name="senha" required />
         </div>
-
         <div class="col-md-6">
           <label class="form-label">Confirme a senha</label>
-          <input
-            type="password"
-            class="form-control"
-            name="senhaconf"
-            required
-          />
+          <input type="password" class="form-control" name="senhaconf" required />
         </div>
       </div>
 
-      <div class="form-check mb-3">
-        <input
-          class="form-check-input"
-          type="checkbox"
-          name="termos"
-          required
-        />
+      <div class="form-check mb-4">
+        <input class="form-check-input" type="checkbox" name="termos" required />
         <label class="form-check-label">
-          Aceito os
-          <a href="http://localhost:8081/termos">termos de serviço</a>
+          Aceito os <a href="http://localhost:8081/termos">termos de serviço</a>
         </label>
       </div>
 
-      <a href="http://localhost:8081/slides"><button type="submit" class="btn btn-primary">Cadastrar</button></a>
+      <button type="submit" class="btn btn-primary btn-lg">Cadastrar</button>
     </form>
   </div>
 </div>
-<script>
-  document.getElementById("cadastroForm").addEventListener("submit", async function(e) { e.preventDefault(); 
-  const formData = Object.fromEntries(new FormData(this).entries());
-  
-  try { 
-  const res = await fetch("/addaluno", 
-  {
-    method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(formData) });
-  
-    const data = await res.json();
 
-    localStorage.setItem("pessoaId", data.id); console.log(localStorage); 
-    
-    window.location.href = "http://localhost:8081/slides";
-  }
-  catch(erro){console.log("ERRO ENCONTRADO: " + erro)} });
+<script>
+  document.getElementById("cadastroForm").addEventListener("submit", async function(e) {
+    e.preventDefault();
+    const formData = Object.fromEntries(new FormData(this).entries());
+
+    try {
+      const res = await fetch("/addaluno", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData)
+      });
+
+      const data = await res.json();
+      
+      localStorage.setItem("pessoaId", data.id);
+      window.location.href = `http://localhost:8081/slides`
+      }
+    catch(err){}
+    });
 </script>

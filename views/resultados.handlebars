@@ -1,20 +1,25 @@
-<div>
+<div class="p-3">
+  <div class="container;">
+    <h2 id="pessoa"></h1>
+  </div>
   <div class="container">
-    <canvas id="meuGrafico" width="100px" height="40px"></canvas>
+    <canvas id="meuGrafico" width="70px" height="20px"></canvas>
   </div>
 </div>
 
 
   <script>
+    const credibilidade = JSON.parse(localStorage.getItem("credibilidade"))
     const dadosBrutos = JSON.parse(localStorage.getItem("valores"));
 
     if(dadosBrutos == null)
     {
-      window.location.href = `http://localhost:8081/`
+      //window.location.href = `http://localhost:8081/`
     }
 
     const dados = dadosBrutos.slice(6, dadosBrutos.length - 6);
 
+    console.log(credibilidade)
     console.log(dados)
     
     let R = 0;
@@ -50,61 +55,54 @@
         }
     }
 
-    console.log(R);
-    console.log(I)
-    console.log(A)
-    console.log(S)
-    console.log(E)
-    console.log(C)
+    filtro = [];
+    filtro.push({valor:R, tipo:"REALISTA"});
+    filtro.push({valor:I, tipo:"INVESTIGADOR"});
+    filtro.push({valor:A, tipo:"ARTISTICO"});
+    filtro.push({valor:S, tipo:"SOCIAL"});
+    filtro.push({valor:E, tipo:"EMPREENDEDOR"});
+    filtro.push({valor:C, tipo:"CONVENCIONAL"});
+
+    const maiorValor = Math.max(...filtro.map(r => r.valor));
+    const maiores = filtro.filter(r => r.valor === maiorValor);
+    let descricao = "Você é uma pessoa: ";
+
+
+    for(maior in maiores)
+    {
+      if(0 == maiores.length-1)
+      {
+        descricao += maiores[maior].tipo
+      }
+      else
+      {
+        if(maior < maiores.length -1)
+        {
+          descricao += ", " + maiores[maior].tipo
+        }
+        else
+        {
+          descricao += " e " + maiores[maior].tipo
+        }
+      }
+    }
+
+    const pessoa = document.getElementById("pessoa");
+    pessoa.textContent = descricao;
 
     const ctx = document.getElementById("meuGrafico").getContext("2d");
     const meuGrafico = new Chart(ctx, {
       type: "bar",
       data: {
-        labels: [""],
+        labels: ["REALISTA","INVESTIGADOR","ARTISTICO","SOCIAL","EMPRENDEDOR","CONVENCIONAL"],
         datasets: [
           {
-            label: "R",
-            data: [R],
+            label: null,
+            data: [R,I,A,S,E,C],
             backgroundColor: "rgba(54, 162, 235, 0.6)",
             borderColor: "rgba(54, 162, 235, 1)",
             borderWidth: 1,
-          },
-          {
-            label: "I",
-            data: [I],
-            backgroundColor: "rgba(54, 162, 235, 0.6)",
-            borderColor: "rgba(54, 162, 235, 1)",
-            borderWidth: 1,
-          },
-          {
-            label: "A",
-            data: [A],
-            backgroundColor: "rgba(54, 162, 235, 0.6)",
-            borderColor: "rgba(54, 162, 235, 1)",
-            borderWidth: 1,
-          },
-          {
-            label: "S",
-            data: [S],
-            backgroundColor: "rgba(54, 162, 235, 0.6)",
-            borderColor: "rgba(54, 162, 235, 1)",
-            borderWidth: 1,
-          },
-          {
-            label: "E",
-            data: [E],
-            backgroundColor: "rgba(54, 162, 235, 0.6)",
-            borderColor: "rgba(54, 162, 235, 1)",
-            borderWidth: 1,
-          },
-          {
-            label: "C",
-            data: [C],
-            backgroundColor: "rgba(54, 162, 235, 0.6)",
-            borderColor: "rgba(54, 162, 235, 1)",
-            borderWidth: 1,
-          },
+          }
         ],
       },
       options: {
@@ -112,8 +110,11 @@
         scales: {
           y: { beginAtZero: true, max: 75 },
         },
+        plugins: {
+          legend: { display: false }
+        }
       },
     });
 
-    localStorage.clear();
+    //localStorage.clear();
   </script>

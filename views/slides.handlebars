@@ -98,7 +98,7 @@ function salvarResultadosFinais()
 
     if(dadosBrutos == null)
     {
-      window.location.href = `http://localhost:8081/`
+      //window.location.href = `http://localhost:8081/`
     }
 
     const dados = dadosBrutos.slice(6, dadosBrutos.length - 6);
@@ -109,6 +109,46 @@ function salvarResultadosFinais()
     let S = 0;
     let E = 0;
     let C = 0;
+
+    let indiceDeCerteza = 0
+    const indexes = 
+    [
+    {
+      //IMAGEM R
+      indiceinicial:13,
+      indicefinal:97
+    },
+    {
+      //IMAGEM I
+      indiceinicial:26,
+      indicefinal:98
+    },
+    {
+      //IMAGEM A
+      indiceinicial:9,
+      indicefinal:99
+    },
+    {
+      //IMAGEM S
+      indiceinicial:22,
+      indicefinal:100
+    },
+    {
+      //IMAGEM E
+      indiceinicial:17,
+      indicefinal:101
+    },
+    {
+      //IMAGEM C
+      indiceinicial:36,
+      indicefinal:102
+    },
+    ]
+
+    for (const index of indexes)
+    {
+      indiceDeCerteza += Math.abs(Number(dadosBrutos[index.indiceinicial - 1].valor) - Number(dadosBrutos[index.indicefinal - 1].valor))
+    }
 
     for (const dado of dados)
     {
@@ -136,11 +176,13 @@ function salvarResultadosFinais()
         }
     }
 
+    localStorage.setItem("credibilidade", JSON.stringify(indiceDeCerteza))
+
     fetch("/updatealuno",
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body:JSON.stringify({id: pessoaId, resr: R, resi: I, resa: A, ress: S, rese: E, resc: C})
+      body:JSON.stringify({id: pessoaId, resr: R, resi: I, resa: A, ress: S, rese: E, resc: C, totalb: indiceDeCerteza, totalv: 0})
     })
 }
 
