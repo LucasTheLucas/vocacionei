@@ -1,0 +1,36 @@
+<div class="container mt-5">
+  <div class="card shadow p-4">
+    <h2 class="mb-4">Cadastro de Instituição de Ensino</h2>
+
+    <form action="/addinstituicao" method="POST">
+      <div class="mb-3">
+        <label for="nome" class="form-label">Nome da Instituição</label>
+        <input type="text" class="form-control" id="nome" name="nome" placeholder="Ex: Escola Estadual Central" required>
+      </div>
+
+      <div class="mb-3">
+        <label for="codrua" class="form-label">Cidade</label>
+        <select class="form-select" id="codrua" name="codrua" required>
+            <option value="0">SELECIONE UMA CIDADE</option>
+          {{#each cidade}}
+            <option value="{{id}}">{{nome}}</option>
+          {{/each}}
+        </select>
+      </div>
+
+      <button type="submit" class="btn btn-primary">Cadastrar</button>
+    </form>
+
+    <hr class="my-4">
+    <h2 class="mb-3">Instituições Cadastradas</h2>
+    <div class="mb-3">
+      <label for="instituicoes" class="form-label">Selecione uma Instituição</label>
+      <select class="form-select" id="instituicoes" name="instituicoes">
+          <option value="0">SELECIONE UMA INSTITUIÇÃO</option>
+        {{#each instituicao}}
+          <option value="{{id}}">{{nome}}</option>
+        {{/each}}
+      </select>
+    
+  </div>
+</div>

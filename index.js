@@ -4,6 +4,8 @@ const { engine } = require("express-handlebars");
 const bodyParser = require("body-parser");
 const Pessoa = require("./models/Pessoa");
 const Imagen = require("./models/Imagens");
+const Cidade = require("./models/Cidade")
+const Instituicao = require("./models/Instituicao")
 
 // CONFIG
 //TAMPLETE ENGINE
@@ -116,6 +118,30 @@ app.get("/slides/:id", async (req, res) => {
 app.get("/resultados", function (req, res) {
   res.render("resultados");
 });
+
+app.get("/administrativo", function (req, res)
+{
+  res.render("administrativo")
+})
+
+app.get("/cadinstituicao", async (req, res) =>
+{
+  const instituicao = await Instituicao.findAll({ raw: true })
+  const cidade = await Cidade.findAll({ raw: true })
+
+  res.render("instituicao", {cidade: cidade, instituicao: instituicao});
+});
+
+app.post("/addinstituicao", function (req, res) {
+  Instituicao.create(
+    {
+      codrua: req.body.codrua,
+      nome: req.body.nome
+    }).then(() =>
+      {
+        res.redirect("http://localhost:8081/cadinstituicao")
+      })
+  });
 
 app.listen(8081, function () {
   console.log("Servidor rodando!");
