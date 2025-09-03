@@ -7,6 +7,9 @@ const Imagen = require("./models/Imagens");
 const Cidade = require("./models/Cidade")
 const Instituicao = require("./models/Instituicao")
 
+Instituicao.belongsTo(Cidade, { foreignKey: 'codrua' });
+Cidade.hasMany(Instituicao, { foreignKey: 'codrua' });
+
 // CONFIG
 //TAMPLETE ENGINE
 app.engine(
@@ -139,9 +142,37 @@ app.post("/addinstituicao", function (req, res) {
       nome: req.body.nome
     }).then(() =>
       {
-        res.redirect("http://localhost:8081/cadinstituicao")
+        res.redirect("/cadinstituicao")
       })
   });
+
+  app.get("/listainstituicao", async (req, res) =>
+  {
+    res.render("listaescolas");
+  });
+  
+  app.get("/listarinstituicao", async (req, res) =>
+  {
+    const instituicoes = await Instituicao.findAll({
+      include: [
+        {
+          model: Cidade,
+          attributes: ["nome"]
+        }
+      ],
+      attributes: ["id", "nome"],
+      raw: true,
+      nest: true
+    });
+
+    const data = instituicoes.map(item => ({
+      id: item.id,
+      nome: item.nome,
+      cidade: item["Cidade.nome"] || "Sem cidade"
+    }));
+res.json(data); 
+});
+
 
 app.listen(8081, function () {
   console.log("Servidor rodando!");
