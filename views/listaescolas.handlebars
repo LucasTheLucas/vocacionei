@@ -9,9 +9,22 @@
     <thead>
       <tr>
         <th data-field="id" data-sortable="true">ID</th>
-        <th data-field="nome" data-sortable="true">Instituição</th>
+        <th data-field="instituicao" data-sortable="true">Instituição</th>
         <th data-field="cidade" data-sortable="true">Cidade</th>
+        <th data-field="editar" data-formatter="editarFormatador">Editar</th>
+        <th data-field="excluir" data-formatter="deleteFormatter">Excluir</th>
       </tr>
     </thead>
   </table>
 </div>
+
+<script>
+  function deleteFormatter(value, row, index) {
+    return `<a href="/excluirInstituicao/${row.id}" class="btn btn-sm btn-danger" onclick="return confirm('Tem certeza que deseja excluir?')">Excluir</a>`;
+  }
+
+  function editarFormatador(value, row, index)
+  {
+    return `<a href="/cadinstituicao/${row.id}" class="btn btn-sm btn-primary">Editar</a>`
+  }
+</script>

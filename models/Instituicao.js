@@ -1,4 +1,5 @@
 const db = require('./db.js');
+const Rua = require('./Rua.js');
 
 const Instituicao = db.sequelize.define('instituicao', {
     nome: {
@@ -6,8 +7,13 @@ const Instituicao = db.sequelize.define('instituicao', {
         allowNull: false,
         unique: true
     },
-    codrua: {
-        type: db.Sequelize.INTEGER
+    codrua: 
+    {
+        type: db.Sequelize.INTEGER,
+        references: {
+            model: Rua,
+            key: 'id'        
+        }
     }
 }, {
     tableName: 'instituicaos',

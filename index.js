@@ -4,11 +4,21 @@ const { engine } = require("express-handlebars");
 const bodyParser = require("body-parser");
 const Pessoa = require("./models/Pessoa");
 const Imagen = require("./models/Imagens");
-const Cidade = require("./models/Cidade")
-const Instituicao = require("./models/Instituicao")
+const Instituicao = require("./models/Instituicao");
+const Rua = require("./models/Rua");
+const Bairro = require("./models/Bairro");
+const Cidade = require("./models/Cidade");
+const nodemailer = require('nodemailer');
 
-Instituicao.belongsTo(Cidade, { foreignKey: 'codrua' });
-Cidade.hasMany(Instituicao, { foreignKey: 'codrua' });
+
+Bairro.belongsTo(Cidade, { foreignKey: "codcidade" });
+Cidade.hasMany(Bairro, { foreignKey: "codcidade" });
+
+Rua.belongsTo(Bairro, { foreignKey: "codbairro" });
+Bairro.hasMany(Rua, { foreignKey: "codbairro" });
+
+Instituicao.belongsTo(Rua, { foreignKey: "codrua" });
+Rua.hasMany(Instituicao, { foreignKey: "codrua" });
 
 // CONFIG
 //TAMPLETE ENGINE
@@ -18,6 +28,7 @@ app.engine(
     defaultLayout: "main",
     helpers: {
       json: (context) => JSON.stringify(context),
+      ifEquals: (a, b, options) => a == b ? options.fn(this) : options.inverse(this),
     },
   })
 );
@@ -66,7 +77,7 @@ app.post("/addaluno", function (req, res) {
     });
 });
 
-app.post("/updatealuno", function (req, res)
+app.post("/updatealuno", async (req, res) =>
 {
   const {id, resr, resi, resa, ress, rese, resc, totalb, totalv} = req.body
   try
@@ -85,6 +96,49 @@ app.post("/updatealuno", function (req, res)
     {
       where: { id: id }
     })
+
+    const pessoa = await Pessoa.findOne({
+      where: { id: id }
+    });
+
+    let transporter = nodemailer.createTransport({
+      host: "smtp.gmail.com",
+      port: 587,
+      secure: false,
+      auth: {
+        user: "vocacioneiofficial@gmail.com",
+        pass: "woiw jtdq ijib rslk"
+      }
+    });
+
+    let htmlEmail = `
+      <h1>Olá ${pessoa.nome}</h1>
+      <p>Seus resultados:</p>
+      <ul>
+        <li>RESR: ${resr}</li>
+        <li>RESI: ${resi}</li>
+        <li>RESA: ${resa}</li>
+        <li>RESS: ${ress}</li>
+        <li>RESE: ${rese}</li>
+        <li>RESC: ${resc}</li>
+        <li>Total B: ${totalb}</li>
+        <li>Total V: ${totalv}</li>
+      </ul>`;
+
+
+    let mailOptions = {
+      from: '"CNV" <vocacioneiofficial@gmail.com>',
+      to: `${pessoa.email}`,  
+      subject: 'Teste de envio pelo Node.js',   
+      text: 'Olá! Este é um email enviado via Node.js', 
+      html: htmlEmail
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        return console.log('Erro ao enviar:', error);
+      }
+    });
   }
   catch
   {
@@ -127,12 +181,13 @@ app.get("/administrativo", function (req, res)
   res.render("administrativo")
 })
 
-app.get("/cadinstituicao", async (req, res) =>
+app.get("/cadinstituicao/:id", async (req, res) =>
 {
-  const instituicao = await Instituicao.findAll({ raw: true })
-  const cidade = await Cidade.findAll({ raw: true })
+  const id = req.params.id
+  const instituicao = await Instituicao.findOne({ raw: true, where: {id:id}})
+  const cidades = await Cidade.findAll({ raw: true })
 
-  res.render("instituicao", {cidade: cidade, instituicao: instituicao});
+  res.render("instituicao", {cidade: cidades, instituicao: instituicao});
 });
 
 app.post("/addinstituicao", function (req, res) {
@@ -153,24 +208,79 @@ app.post("/addinstituicao", function (req, res) {
   
   app.get("/listarinstituicao", async (req, res) =>
   {
-    const instituicoes = await Instituicao.findAll({
+const instituicoes = await Instituicao.findAll({
+  attributes: ['id','nome'],
+  include: [
+    {
+      model: Rua,
+      attributes: ['nome'],
       include: [
         {
-          model: Cidade,
-          attributes: ["nome"]
+          model: Bairro,
+          attributes: ['nome'],
+          include: [
+            {
+              model: Cidade,
+              attributes: ['nome']
+            }
+          ]
         }
-      ],
-      attributes: ["id", "nome"],
-      raw: true,
-      nest: true
-    });
+      ]
+    }
+  ]
+});
 
-    const data = instituicoes.map(item => ({
-      id: item.id,
-      nome: item.nome,
-      cidade: item["Cidade.nome"] || "Sem cidade"
-    }));
-res.json(data); 
+  app.get("/excluirInstituicao/:id", async (req, res) =>
+    {
+      try {
+      const id = req.params.id;
+      const deleted = await Instituicao.destroy({ where: { id: id } });
+
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: "Erro ao excluir instituição" });
+    }  
+    })
+
+  app.post("/editarInstituicao/:id/:nome", async (req, res) =>
+  {
+    try
+    {
+      const id = req.params.id;
+      const nome = req.params.nome;
+      
+      if(id > 0)
+        {
+          const updated = await Instituicao.update(
+          {
+            nome: nome
+          },
+          {
+            where: { id: id }
+          })    
+        }
+      else
+        {
+          
+        }
+      
+    }
+    catch(err)
+    {
+      console.log(err)
+    }
+  })
+
+const resultado = instituicoes.map(inst => ({
+  id: inst.id,
+  instituicao: inst.nome,
+  rua: inst.rua.nome,
+  bairro: inst.rua.bairro.nome,
+  cidade: inst.rua.bairro.cidade.nome
+}));
+
+console.log(resultado)
+res.json(resultado);
 });
 
 
