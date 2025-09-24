@@ -1,3 +1,7 @@
+<div class="mb-3">
+  <a href="/cadinstituicao" class="btn btn-success">Adicionar Instituição</a>
+</div>
+
 <div>
   <table
     id="table"
@@ -23,8 +27,7 @@
     return `<a href="/excluirInstituicao/${row.id}" class="btn btn-sm btn-danger" onclick="return confirm('Tem certeza que deseja excluir?')">Excluir</a>`;
   }
 
-  function editarFormatador(value, row, index)
-  {
-    return `<a href="/cadinstituicao/${row.id}" class="btn btn-sm btn-primary">Editar</a>`
+  function editarFormatador(value, row, index) {
+    return `<a href="/cadinstituicao/${row.id}" class="btn btn-sm btn-primary">Editar</a>`;
   }
 </script>

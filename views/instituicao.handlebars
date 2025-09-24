@@ -1,24 +1,40 @@
 <div class="container mt-5">
   <div class="card shadow p-4">
-    <h2 class="mb-4">Cadastro de Instituição de Ensino</h2>
+    <h2 class="mb-4">
+      {{#if instituicao.id}}
+        Editar Instituição de Ensino
+      {{else}}
+        Cadastro de Instituição de Ensino
+      {{/if}}
+    </h2>
 
-    <form action="/editarInstituicao" method="POST">
+    <form action="{{#if instituicao.id}}/editarInstituicao/{{instituicao.id}}{{else}}/addinstituicao{{/if}}" method="POST">
       <div class="mb-3">
         <label for="nome" class="form-label">Nome da Instituição</label>
-        <input type="text" class="form-control" id="nome" name="nome" placeholder="Ex: Escola Estadual Central" value="{{instituicao.nome}}" required>
+        <input 
+          type="text" 
+          class="form-control" 
+          id="nome" 
+          name="nome" 
+          value="{{#if instituicao}}{{instituicao.nome}}{{/if}}" 
+          required>
       </div>
 
       <div class="mb-3">
         <label for="codrua" class="form-label">Cidade</label>
         <select class="form-select" id="codrua" name="codrua" required>
-            <option value="0">SELECIONE UMA CIDADE</option>
+          <option value="0">SELECIONE UMA CIDADE</option>
           {{#each cidade}}
-        <option value="{{id}}" {{#ifEquals id ../instituicao.codrua}}selected{{/ifEquals}}>{{nome}}</option>
+            <option value="{{id}}" {{#ifEquals id ../instituicao.codrua}}selected{{/ifEquals}}>
+              {{nome}}
+            </option>
           {{/each}}
         </select>
       </div>
 
-      <button type="submit" class="btn btn-primary">Salvar</button>
-    </form>    
+      <button type="submit" class="btn btn-primary">
+        {{#if instituicao.id}}Atualizar{{else}}Salvar{{/if}}
+      </button>
+    </form>
   </div>
 </div>

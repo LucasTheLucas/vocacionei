@@ -7,13 +7,16 @@ const Instituicao = db.sequelize.define('instituicao', {
         allowNull: false,
         unique: true
     },
-    codrua: 
-    {
+    codrua: {
         type: db.Sequelize.INTEGER,
         references: {
             model: Rua,
             key: 'id'        
         }
+    },
+    inativo: {
+        type: db.Sequelize.BOOLEAN,
+        defaultValue: false
     }
 }, {
     tableName: 'instituicaos',
