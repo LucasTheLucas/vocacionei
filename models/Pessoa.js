@@ -28,6 +28,5 @@ const Pessoa = db.sequelize.define('pessoa', {
     bairro: { type: db.Sequelize.STRING },
     cidade: { type: db.Sequelize.STRING }
 });
-db.sequelize.sync()
 
 module.exports = Pessoa;

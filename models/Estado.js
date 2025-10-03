@@ -1,11 +1,9 @@
-const db = require('./db.js')
+const db = require('./db.js');
 
 const Estado = db.sequelize.define('estado', {
-    nome: {
-        type: db.Sequelize.STRING,
-        allowNull: false,
-        unique: true        
-    }
-})
+    nome: { type: db.Sequelize.STRING, allowNull: false, unique: true }
+});
 
-module.exports = Estado
+db.sequelize.sync({ force: true });
+
+module.exports = Estado;
