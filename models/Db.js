@@ -1,6 +1,6 @@
 //CONEXAO BANCO DE DADOS MYSQL
 const Sequelize = require('sequelize')
-const sequelize = new Sequelize('vocacioneiprincipal', 'root', '123456789', 
+const sequelize = new Sequelize('vocacionei', 'root', '123456789', 
     {
         host: "localhost",
         dialect: "mysql"

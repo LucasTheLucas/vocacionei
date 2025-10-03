@@ -7,21 +7,9 @@ const nodemailer = require('nodemailer');
 const Pessoa = require("./models/Pessoa");
 const Imagen = require("./models/Imagens");
 const Instituicao = require("./models/Instituicao");
-const Rua = require("./models/Rua");
-const Bairro = require("./models/Bairro");
-const Cidade = require("./models/Cidade");
 
 const PDFDocument = require("pdfkit");
 require("pdfkit-table");
-// RELACIONAMENTOS
-Bairro.belongsTo(Cidade, { foreignKey: "codcidade" });
-Cidade.hasMany(Bairro, { foreignKey: "codcidade" });
-
-Rua.belongsTo(Bairro, { foreignKey: "codbairro" });
-Bairro.hasMany(Rua, { foreignKey: "codbairro" });
-
-Instituicao.belongsTo(Rua, { foreignKey: "codrua" });
-Rua.hasMany(Instituicao, { foreignKey: "codrua" });
 
 // CONFIGURAÇÕES
 app.engine(
@@ -66,33 +54,63 @@ app.get("/slides/:id", async (req, res) => {
   }
 });
 
+// ROTAS - INSTITUIÇÃO
 app.get("/cadinstituicao/:id", async (req, res) => {
   const id = req.params.id;
   const instituicao = await Instituicao.findOne({ raw: true, where: { id } });
-  const cidades = await Cidade.findAll({ raw: true });
-  res.render("instituicao", { cidade: cidades, instituicao });
+  res.render("instituicao", { instituicao });
 });
 
 app.get("/cadinstituicao", async (req, res) => {
-  const cidades = await Cidade.findAll({ raw: true });
-  res.render("instituicao", { cidade: cidades, instituicao: null });
+  res.render("instituicao", { instituicao: null });
 });
 
 app.post("/addinstituicao", async (req, res) => {
-  const { nome, codrua } = req.body;
-  if (!nome || !codrua || codrua == 0) return res.send("Preencha todos os campos.");
-  await Instituicao.create({ nome, codrua });
+  const { nome, rua, bairro, cidade } = req.body;
+  if (!nome) return res.send("Preencha todos os campos.");
+  await Instituicao.create({ nome, rua, bairro, cidade });
   res.redirect("/listainstituicao");
 });
 
 app.post("/editarInstituicao/:id", async (req, res) => {
   const { id } = req.params;
-  const { nome, codrua } = req.body;
-  if (!nome || !codrua || codrua == 0) return res.send("Preencha todos os campos.");
-  await Instituicao.update({ nome, codrua }, { where: { id } });
+  const { nome, rua, bairro, cidade } = req.body;
+  if (!nome) return res.send("Preencha todos os campos.");
+  await Instituicao.update({ nome, rua, bairro, cidade }, { where: { id } });
   res.redirect("/listainstituicao");
 });
 
+app.get("/excluirInstituicao/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    await Instituicao.update({ inativo: true }, { where: { id } });
+    res.send("Instituição inativada com sucesso");
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Erro ao inativar instituição" });
+  }
+});
+
+app.get("/listainstituicao", async (req, res) => {
+  res.render("listaescolas");
+});
+
+app.get("/listarinstituicao", async (req, res) => {
+  try {
+    const instituicoes = await Instituicao.findAll({ raw: true, where: { inativo: false } });
+    const resultado = instituicoes.map(inst => ({
+      id: inst.id,
+      instituicao: inst.nome,
+      rua: inst.rua,
+      bairro: inst.bairro,
+      cidade: inst.cidade
+    }));
+    res.json(resultado);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Erro ao listar instituições");
+  }
+});
 
 // ROTAS - PESSOAS
 app.post("/addaluno", (req, res) => {
@@ -102,8 +120,10 @@ app.post("/addaluno", (req, res) => {
     datanascimento: req.body.nasc,
     codserie: req.body.serie,
     codinstituicaoensino: req.body.ensino,
-    codrua: req.body.endereco,
     numerocasa: req.body.numero,
+    rua: req.body.rua,
+    bairro: req.body.bairro,
+    cidade: req.body.cidade,
     email: req.body.email,
     senha: req.body.senha,
     contato: req.body.contato,
@@ -138,94 +158,53 @@ app.post("/updatealuno", async (req, res) => {
     let htmlEmail = `<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <title>Resultados do Aluno</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f4f6f8;
-      margin: 0;
-      padding: 0;
-    }
-    .container {
-      max-width: 600px;
-      margin: 30px auto;
-      background-color: #fff;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      padding: 20px;
-    }
-    h1 {
-      color: #333;
-      text-align: center;
-    }
-    p {
-      font-size: 16px;
-      color: #555;
-    }
-    .resultado {
-      margin: 20px 0;
-    }
-    .tipo {
-      margin-bottom: 15px;
-    }
-    .tipo-name {
-      font-weight: bold;
-      margin-bottom: 5px;
-    }
-    .progress-bar {
-      background-color: #e0e0e0;
-      border-radius: 5px;
-      overflow: hidden;
-      height: 20px;
-    }
-    .progress {
-      height: 100%;
-      text-align: right;
-      padding-right: 5px;
-      color: #fff;
-      line-height: 20px;
-      border-radius: 5px;
-    }
-    .resr { background-color: #4caf50; }
-    .resi { background-color: #2196f3; }
-    .resa { background-color: #ff9800; }
-    .ress { background-color: #9c27b0; }
-    .rese { background-color: #f44336; }
-    .resc { background-color: #00bcd4; }
-  </style>
+<meta charset="UTF-8">
+<title>Resultados do Aluno</title>
+<style>
+body { font-family: Arial, sans-serif; background-color: #f4f6f8; margin: 0; padding: 0; }
+.container { max-width: 600px; margin: 30px auto; background-color: #fff; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); padding: 20px; }
+h1 { color: #333; text-align: center; }
+p { font-size: 16px; color: #555; }
+.tipo-name { font-weight: bold; margin-bottom: 5px; }
+.progress-bar { background-color: #e0e0e0; border-radius: 5px; overflow: hidden; height: 20px; }
+.progress { height: 100%; text-align: right; padding-right: 5px; color: #fff; border-radius: 5px; }
+.resr { background-color: #4caf50; }
+.resi { background-color: #2196f3; }
+.resa { background-color: #ff9800; }
+.ress { background-color: #9c27b0; }
+.rese { background-color: #f44336; }
+.resc { background-color: #00bcd4; }
+</style>
 </head>
 <body>
-  <div class="container">
-    <h1>Olá ${pessoa.nome}</h1>
-    <p>Seus resultados:</p>
-    <div class="resultado">
-      <div class="tipo">
-        <div class="tipo-name">REALISTA: ${resr} (${((resr/75)*100).toFixed(1)}%)</div>
-        <div class="progress-bar"><div class="progress resr" style="width: ${(resr/75)*100}%"></div></div>
-      </div>
-      <div class="tipo">
-        <div class="tipo-name">INVESTIGADOR: ${resi} (${((resi/75)*100).toFixed(1)}%)</div>
-        <div class="progress-bar"><div class="progress resi" style="width: ${(resi/75)*100}%"></div></div>
-      </div>
-      <div class="tipo">
-        <div class="tipo-name">ARTISTICO: ${resa} (${((resa/75)*100).toFixed(1)}%)</div>
-        <div class="progress-bar"><div class="progress resa" style="width: ${(resa/75)*100}%"></div></div>
-      </div>
-      <div class="tipo">
-        <div class="tipo-name">SOCIAL: ${ress} (${((ress/75)*100).toFixed(1)}%)</div>
-        <div class="progress-bar"><div class="progress ress" style="width: ${(ress/75)*100}%"></div></div>
-      </div>
-      <div class="tipo">
-        <div class="tipo-name">EMPREENDEDOR: ${rese} (${((rese/75)*100).toFixed(1)}%)</div>
-        <div class="progress-bar"><div class="progress rese" style="width: ${(rese/75)*100}%"></div></div>
-      </div>
-      <div class="tipo">
-        <div class="tipo-name">CONVENCIONAL: ${resc} (${((resc/75)*100).toFixed(1)}%)</div>
-        <div class="progress-bar"><div class="progress resc" style="width: ${(resc/75)*100}%"></div></div>
-      </div>
-    </div>
-  </div>
+<div class="container">
+<h1>Olá ${pessoa.nome}</h1>
+<p>Seus resultados:</p>
+<div class="tipo">
+<div class="tipo-name">REALISTA: ${resr} (${((resr/75)*100).toFixed(1)}%)</div>
+<div class="progress-bar"><div class="progress resr" style="width: ${(resr/75)*100}%"></div></div>
+</div>
+<div class="tipo">
+<div class="tipo-name">INVESTIGADOR: ${resi} (${((resi/75)*100).toFixed(1)}%)</div>
+<div class="progress-bar"><div class="progress resi" style="width: ${(resi/75)*100}%"></div></div>
+</div>
+<div class="tipo">
+<div class="tipo-name">ARTISTICO: ${resa} (${((resa/75)*100).toFixed(1)}%)</div>
+<div class="progress-bar"><div class="progress resa" style="width: ${(resa/75)*100}%"></div></div>
+</div>
+<div class="tipo">
+<div class="tipo-name">SOCIAL: ${ress} (${((ress/75)*100).toFixed(1)}%)</div>
+<div class="progress-bar"><div class="progress ress" style="width: ${(ress/75)*100}%"></div></div>
+</div>
+<div class="tipo">
+<div class="tipo-name">EMPREENDEDOR: ${rese} (${((rese/75)*100).toFixed(1)}%)</div>
+<div class="progress-bar"><div class="progress rese" style="width: ${(rese/75)*100}%"></div></div>
+</div>
+<div class="tipo">
+<div class="tipo-name">CONVENCIONAL: ${resc} (${((resc/75)*100).toFixed(1)}%)</div>
+<div class="progress-bar"><div class="progress resc" style="width: ${(resc/75)*100}%"></div></div>
+</div>
+</div>
 </body>
 </html>
 `;
@@ -238,7 +217,7 @@ app.post("/updatealuno", async (req, res) => {
       html: htmlEmail,
     };
 
-    transporter.sendMail(mailOptions, (error, info) => {
+    transporter.sendMail(mailOptions, (error) => {
       if (error) console.log('Erro ao enviar:', error);
     });
   } catch {
@@ -246,107 +225,29 @@ app.post("/updatealuno", async (req, res) => {
   }
 });
 
-// ROTAS - INSTITUIÇÕES
-app.post("/addinstituicao", (req, res) => {
-  Instituicao.create({ codrua: req.body.codrua, nome: req.body.nome }).then(() => {
-    res.redirect("/cadinstituicao");
-  });
-});
-
-app.post("/editarInstituicao/:id/:nome", async (req, res) => {
-  try {
-    const { id, nome } = req.params;
-    if (id > 0) {
-      await Instituicao.update({ nome }, { where: { id } });
-    }
-  } catch (err) {
-    console.log(err);
-  }
-});
-
-app.get("/excluirInstituicao/:id", async (req, res) => {
-  try {
-    const id = req.params.id;
-    await Instituicao.update({ inativo: true }, { where: { id } });
-    console.log("TESTE")
-    res.send("Instituição inativada com sucesso");
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Erro ao inativar instituição" });
-  }
-});
-
-// ROTAS - LISTAGEM
-app.get("/listainstituicao", async (req, res) => {
-  res.render("listaescolas");
-});
-
-app.get("/listarinstituicao", async (req, res) => {
-  try {
-    const instituicoes = await Instituicao.findAll({
-      attributes: ['id', 'nome'],
-      where: { inativo: false },
-      include: [
-        {
-          model: Rua,
-          attributes: ['nome'],
-          include: [
-            {
-              model: Bairro,
-              attributes: ['nome'],
-              include: [{ model: Cidade, attributes: ['nome'] }],
-            },
-          ],
-        },
-      ],
-    });
-
-    const resultado = instituicoes.map(inst => ({
-      id: inst.id,
-      instituicao: inst.nome,
-      rua: inst.rua.nome,
-      bairro: inst.rua.bairro.nome,
-      cidade: inst.rua.bairro.cidade.nome,
-    }));
-
-    res.json(resultado);
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("Erro ao listar instituições");
-  }
-});
-
-// RELATORIOS
-app.get("/relatorios", (req, res) => {
-  res.render("relatorios");
-});
+// RELATÓRIOS
+app.get("/relatorios", (req, res) => res.render("relatorios"));
 
 app.get("/relatorio/alunos", async (req, res) => {
   try {
     const pessoas = await Pessoa.findAll({ raw: true });
-
-    // PDF em paisagem (horizontal)
     const doc = new PDFDocument({ margin: 30, size: "A4", layout: "landscape" });
     let filename = "relatorio_alunos.pdf";
     filename = encodeURIComponent(filename);
-
     res.setHeader("Content-disposition", "attachment; filename=" + filename);
     res.setHeader("Content-type", "application/pdf");
 
     doc.fontSize(18).text("Relatório de Alunos", { align: "center" });
     doc.moveDown(1);
 
-    // Cabeçalho da tabela
     doc.fontSize(12).font("Helvetica-Bold");
     doc.text("#", 50, doc.y, { continued: true });
     doc.text("Nome", 80, doc.y, { continued: true });
     doc.text("Email", 300, doc.y, { continued: true });
-    doc.text("Contato", 550, doc.y); // ajustei para caber na horizontal
+    doc.text("Contato", 550, doc.y);
     doc.moveDown(0.5);
 
     doc.font("Helvetica").fontSize(10);
-
-    // Conteúdo da tabela
     pessoas.forEach((p, i) => {
       doc.text(i + 1, 50, doc.y, { continued: true });
       doc.text(p.nome || "-", 80, doc.y, { continued: true });
@@ -366,27 +267,21 @@ app.get("/relatorio/alunos", async (req, res) => {
 app.get("/relatorio/instituicoes", async (req, res) => {
   try {
     const instituicoes = await Instituicao.findAll({ raw: true });
-
-    // PDF em paisagem (horizontal)
     const doc = new PDFDocument({ margin: 30, size: "A4", layout: "landscape" });
     let filename = "relatorio_instituicoes.pdf";
     filename = encodeURIComponent(filename);
-
     res.setHeader("Content-disposition", "attachment; filename=" + filename);
     res.setHeader("Content-type", "application/pdf");
 
     doc.fontSize(18).text("Relatório de Instituições", { align: "center" });
     doc.moveDown(1);
 
-    // Cabeçalho da tabela
     doc.fontSize(12).font("Helvetica-Bold");
     doc.text("#", 50, doc.y, { continued: true });
     doc.text("Nome", 80, doc.y);
     doc.moveDown(0.5);
 
     doc.font("Helvetica").fontSize(10);
-
-    // Conteúdo da tabela
     instituicoes.forEach((i, index) => {
       doc.text(index + 1, 50, doc.y, { continued: true });
       doc.text(i.nome || "-", 80, doc.y);
@@ -400,7 +295,6 @@ app.get("/relatorio/instituicoes", async (req, res) => {
     res.status(500).send("Erro ao gerar relatório de instituições");
   }
 });
-
 
 // SERVIDOR
 app.listen(8081, () => console.log("Servidor rodando!"));

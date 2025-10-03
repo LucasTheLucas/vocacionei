@@ -1,5 +1,4 @@
 const db = require('./db.js');
-const Rua = require('./Rua.js');
 
 const Instituicao = db.sequelize.define('instituicao', {
     nome: {
@@ -7,12 +6,17 @@ const Instituicao = db.sequelize.define('instituicao', {
         allowNull: false,
         unique: true
     },
-    codrua: {
-        type: db.Sequelize.INTEGER,
-        references: {
-            model: Rua,
-            key: 'id'        
-        }
+    rua: {
+        type: db.Sequelize.STRING,
+        allowNull: true
+    },
+    bairro: {
+        type: db.Sequelize.STRING,
+        allowNull: true
+    },
+    cidade: {
+        type: db.Sequelize.STRING,
+        allowNull: true
     },
     inativo: {
         type: db.Sequelize.BOOLEAN,
@@ -23,4 +27,5 @@ const Instituicao = db.sequelize.define('instituicao', {
     timestamps: true           
 });
 
+db.sequelize.sync()
 module.exports = Instituicao;
