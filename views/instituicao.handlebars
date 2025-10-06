@@ -20,16 +20,52 @@
           required>
       </div>
 
-      <div class="mb-3">
-        <label for="codrua" class="form-label">Cidade</label>
-        <select class="form-select" id="codrua" name="codrua" required>
-          <option value="0">SELECIONE UMA CIDADE</option>
-          {{#each cidade}}
-            <option value="{{id}}" {{#ifEquals id ../instituicao.codrua}}selected{{/ifEquals}}>
-              {{nome}}
-            </option>
-          {{/each}}
-        </select>
+      <div class="row mb-3">
+        <div class="col-md-4">
+          <label for="rua" class="form-label">Rua</label>
+          <input 
+            type="text" 
+            class="form-control" 
+            id="rua" 
+            name="rua" 
+            value="{{#if instituicao}}{{instituicao.rua}}{{/if}}" 
+            required>
+        </div>
+
+        <div class="col-md-3">
+          <label for="bairro" class="form-label">Bairro</label>
+          <input 
+            type="text" 
+            class="form-control" 
+            id="bairro" 
+            name="bairro" 
+            value="{{#if instituicao}}{{instituicao.bairro}}{{/if}}" 
+            required>
+        </div>
+
+        <div class="col-md-3">
+          <label for="idcidade" class="form-label">Cidade</label>
+          <select class="form-select" id="idcidade" name="idcidade" required>
+            <option value="">SELECIONE UMA CIDADE</option>
+            {{#each cidade}}
+              <option value="{{id}}" {{#ifEquals id ../instituicao.idcidade}}selected{{/ifEquals}}>
+                {{nome}}
+              </option>
+            {{/each}}
+          </select>
+        </div>
+
+        <div class="col-md-2">
+          <label for="idestado" class="form-label">Estado</label>
+          <select class="form-select" id="idestado" name="idestado" required>
+            <option value="">SELECIONE UM ESTADO</option>
+            {{#each estado}}
+              <option value="{{id}}" {{#ifEquals id ../instituicao.idestado}}selected{{/ifEquals}}>
+                {{nome}}
+              </option>
+            {{/each}}
+          </select>
+        </div>
       </div>
 
       <button type="submit" class="btn btn-primary">

@@ -7,11 +7,13 @@ const nodemailer = require('nodemailer');
 const Pessoa = require("./models/Pessoa");
 const Imagen = require("./models/Imagens");
 const Instituicao = require("./models/Instituicao");
+const Estado = require("./models/Estado");
+const Cidade = require("./models/Cidade");
 
 const PDFDocument = require("pdfkit");
 require("pdfkit-table");
 
-// CONFIGURAÇÕES
+// --- CONFIGURAÇÕES DO HANDLEBARS ---
 app.engine(
   "handlebars",
   engine({
@@ -27,15 +29,24 @@ app.use(express.static("public"));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-// ROTAS - PÁGINAS
+// --- ASSOCIAÇÕES (Sequelize) ---
+Instituicao.belongsTo(Cidade, { foreignKey: 'idcidade', as: 'cidadeData' });
+Instituicao.belongsTo(Estado, { foreignKey: 'idestado', as: 'estadoData' });
+
+// --- ROTAS - PÁGINAS ---
 app.get("/", (req, res) => res.render("principal"));
-app.get("/cadastrar", (req, res) => res.render("formulario"));
+app.get("/cadastrar", async (req, res) => {
+  const estado = await Estado.findAll({ raw: true });
+  const instituicao = await Instituicao.findAll({ raw: true });
+  const cidade = await Cidade.findAll({ raw: true });
+  res.render("formulario", { estado, instituicao, cidade });
+});
 app.get("/termos", (req, res) => res.render("termos"));
 app.get("/resultados", (req, res) => res.render("resultados"));
 app.get("/administrativo", (req, res) => res.render("administrativo"));
 
 app.get("/slides", (req, res) => {
-  res.redirect("http://localhost:8081/slides/1");
+  res.redirect("/slides/1");
 });
 
 app.get("/slides/:id", async (req, res) => {
@@ -54,29 +65,33 @@ app.get("/slides/:id", async (req, res) => {
   }
 });
 
-// ROTAS - INSTITUIÇÃO
+// --- ROTAS - INSTITUIÇÃO ---
 app.get("/cadinstituicao/:id", async (req, res) => {
   const id = req.params.id;
   const instituicao = await Instituicao.findOne({ raw: true, where: { id } });
-  res.render("instituicao", { instituicao });
+  const cidade = await Cidade.findAll({ raw: true });
+  const estado = await Estado.findAll({ raw: true });
+  res.render("instituicao", { instituicao, cidade, estado });
 });
 
 app.get("/cadinstituicao", async (req, res) => {
-  res.render("instituicao", { instituicao: null });
+  const cidade = await Cidade.findAll({ raw: true });
+  const estado = await Estado.findAll({ raw: true });
+  res.render("instituicao", { instituicao: null, cidade, estado });
 });
 
 app.post("/addinstituicao", async (req, res) => {
-  const { nome, rua, bairro, cidade } = req.body;
-  if (!nome) return res.send("Preencha todos os campos.");
-  await Instituicao.create({ nome, rua, bairro, cidade });
+  const { nome, rua, bairro, idestado, idcidade } = req.body;
+  if (!nome || !idestado) return res.send("Preencha todos os campos obrigatórios.");
+  await Instituicao.create({ nome, rua, bairro, idestado, idcidade });
   res.redirect("/listainstituicao");
 });
 
 app.post("/editarInstituicao/:id", async (req, res) => {
   const { id } = req.params;
-  const { nome, rua, bairro, cidade } = req.body;
-  if (!nome) return res.send("Preencha todos os campos.");
-  await Instituicao.update({ nome, rua, bairro, cidade }, { where: { id } });
+  const { nome, rua, bairro, idestado, idcidade } = req.body;
+  if (!nome || !idestado) return res.send("Preencha todos os campos obrigatórios.");
+  await Instituicao.update({ nome, rua, bairro, idestado, idcidade }, { where: { id } });
   res.redirect("/listainstituicao");
 });
 
@@ -97,14 +112,25 @@ app.get("/listainstituicao", async (req, res) => {
 
 app.get("/listarinstituicao", async (req, res) => {
   try {
-    const instituicoes = await Instituicao.findAll({ raw: true, where: { inativo: false } });
+    const instituicoes = await Instituicao.findAll({
+      where: { inativo: false },
+      include: [
+        { model: Cidade, attributes: ['nome'], as: 'cidadeData' },
+        { model: Estado, attributes: ['nome'], as: 'estadoData' }
+      ],
+      raw: true,
+      nest: true
+    });
+
     const resultado = instituicoes.map(inst => ({
       id: inst.id,
       instituicao: inst.nome,
       rua: inst.rua,
       bairro: inst.bairro,
-      cidade: inst.cidade
+      cidade: inst.cidadeData?.nome || '-',
+      estado: inst.estadoData?.nome || '-'
     }));
+
     res.json(resultado);
   } catch (err) {
     console.error(err);
@@ -112,7 +138,7 @@ app.get("/listarinstituicao", async (req, res) => {
   }
 });
 
-// ROTAS - PESSOAS
+// --- ROTAS - PESSOAS ---
 app.post("/addaluno", (req, res) => {
   Pessoa.create({
     nome: req.body.nome,
@@ -123,7 +149,8 @@ app.post("/addaluno", (req, res) => {
     numerocasa: req.body.numero,
     rua: req.body.rua,
     bairro: req.body.bairro,
-    cidade: req.body.cidade,
+    idestado: req.body.estado,
+    idcidade: req.body.idcidade,
     email: req.body.email,
     senha: req.body.senha,
     contato: req.body.contato,
@@ -157,9 +184,7 @@ app.post("/updatealuno", async (req, res) => {
 
     let htmlEmail = `<!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-<meta charset="UTF-8">
-<title>Resultados do Aluno</title>
+<head><meta charset="UTF-8"><title>Resultados do Aluno</title>
 <style>
 body { font-family: Arial, sans-serif; background-color: #f4f6f8; margin: 0; padding: 0; }
 .container { max-width: 600px; margin: 30px auto; background-color: #fff; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); padding: 20px; }
@@ -180,34 +205,14 @@ p { font-size: 16px; color: #555; }
 <div class="container">
 <h1>Olá ${pessoa.nome}</h1>
 <p>Seus resultados:</p>
-<div class="tipo">
-<div class="tipo-name">REALISTA: ${resr} (${((resr/75)*100).toFixed(1)}%)</div>
-<div class="progress-bar"><div class="progress resr" style="width: ${(resr/75)*100}%"></div></div>
+<div class="tipo"><div class="tipo-name">REALISTA: ${resr} (${((resr/75)*100).toFixed(1)}%)</div><div class="progress-bar"><div class="progress resr" style="width: ${(resr/75)*100}%"></div></div></div>
+<div class="tipo"><div class="tipo-name">INVESTIGADOR: ${resi} (${((resi/75)*100).toFixed(1)}%)</div><div class="progress-bar"><div class="progress resi" style="width: ${(resi/75)*100}%"></div></div></div>
+<div class="tipo"><div class="tipo-name">ARTISTICO: ${resa} (${((resa/75)*100).toFixed(1)}%)</div><div class="progress-bar"><div class="progress resa" style="width: ${(resa/75)*100}%"></div></div></div>
+<div class="tipo"><div class="tipo-name">SOCIAL: ${ress} (${((ress/75)*100).toFixed(1)}%)</div><div class="progress-bar"><div class="progress ress" style="width: ${(ress/75)*100}%"></div></div></div>
+<div class="tipo"><div class="tipo-name">EMPREENDEDOR: ${rese} (${((rese/75)*100).toFixed(1)}%)</div><div class="progress-bar"><div class="progress rese" style="width: ${(rese/75)*100}%"></div></div></div>
+<div class="tipo"><div class="tipo-name">CONVENCIONAL: ${resc} (${((resc/75)*100).toFixed(1)}%)</div><div class="progress-bar"><div class="progress resc" style="width: ${(resc/75)*100}%"></div></div></div>
 </div>
-<div class="tipo">
-<div class="tipo-name">INVESTIGADOR: ${resi} (${((resi/75)*100).toFixed(1)}%)</div>
-<div class="progress-bar"><div class="progress resi" style="width: ${(resi/75)*100}%"></div></div>
-</div>
-<div class="tipo">
-<div class="tipo-name">ARTISTICO: ${resa} (${((resa/75)*100).toFixed(1)}%)</div>
-<div class="progress-bar"><div class="progress resa" style="width: ${(resa/75)*100}%"></div></div>
-</div>
-<div class="tipo">
-<div class="tipo-name">SOCIAL: ${ress} (${((ress/75)*100).toFixed(1)}%)</div>
-<div class="progress-bar"><div class="progress ress" style="width: ${(ress/75)*100}%"></div></div>
-</div>
-<div class="tipo">
-<div class="tipo-name">EMPREENDEDOR: ${rese} (${((rese/75)*100).toFixed(1)}%)</div>
-<div class="progress-bar"><div class="progress rese" style="width: ${(rese/75)*100}%"></div></div>
-</div>
-<div class="tipo">
-<div class="tipo-name">CONVENCIONAL: ${resc} (${((resc/75)*100).toFixed(1)}%)</div>
-<div class="progress-bar"><div class="progress resc" style="width: ${(resc/75)*100}%"></div></div>
-</div>
-</div>
-</body>
-</html>
-`;
+</body></html>`;
 
     let mailOptions = {
       from: '"CNV" <vocacioneiofficial@gmail.com>',
@@ -220,12 +225,12 @@ p { font-size: 16px; color: #555; }
     transporter.sendMail(mailOptions, (error) => {
       if (error) console.log('Erro ao enviar:', error);
     });
-  } catch {
-    console.log("ERRO");
+  } catch (err) {
+    console.log("ERRO:", err);
   }
 });
 
-// RELATÓRIOS
+// --- RELATÓRIOS ---
 app.get("/relatorios", (req, res) => res.render("relatorios"));
 
 app.get("/relatorio/alunos", async (req, res) => {
@@ -296,5 +301,5 @@ app.get("/relatorio/instituicoes", async (req, res) => {
   }
 });
 
-// SERVIDOR
+// --- SERVIDOR ---
 app.listen(8081, () => console.log("Servidor rodando!"));

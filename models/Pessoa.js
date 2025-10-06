@@ -1,6 +1,8 @@
 const db = require('./db.js');
 
-const Pessoa = db.sequelize.define('pessoa', {
+const Pessoa = db.sequelize.define(
+  'pessoa',
+  {
     nome: { type: db.Sequelize.STRING },
     sexo: { type: db.Sequelize.CHAR },
     datanascimento: { type: db.Sequelize.DATEONLY },
@@ -26,7 +28,12 @@ const Pessoa = db.sequelize.define('pessoa', {
     idestado: { type: db.Sequelize.INTEGER },
     rua: { type: db.Sequelize.STRING },
     bairro: { type: db.Sequelize.STRING },
-    cidade: { type: db.Sequelize.STRING }
-});
+    idcidade: { type: db.Sequelize.INTEGER },
+  },
+  {
+    tableName: 'pessoas',
+    timestamps: true,
+  }
+);
 
 module.exports = Pessoa;

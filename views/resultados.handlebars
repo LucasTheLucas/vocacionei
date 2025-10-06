@@ -116,5 +116,10 @@
       },
     });
 
-    localStorage.clear();
+    const manter = ["pessoaId"];
+    Object.keys(localStorage).forEach((key) => {
+      if (!manter.includes(key)) {
+        localStorage.removeItem(key);
+      }
+    });
   </script>

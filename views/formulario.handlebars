@@ -48,31 +48,83 @@
         <div class="col-md-6">
           <label class="form-label">Instituição de ensino</label>
           <select id="ensino" class="form-select" name="ensino">
-            <option value="1">Dado Mocado</option>
+            <option value="0">
+                --SELECIONE UMA INSTITUIÇÃO--
+              </option>
+            {{#each instituicao}}
+              <option value="{{id}}">
+                {{nome}}
+              </option>
+      {{/each}}
           </select>
         </div>
         <div class="col-md-6">
           <label class="form-label">Série</label>
           <select class="form-select" name="serie">
-            <option value="1">1° Ensino Médio</option>
-            <option value="2">2° Ensino Médio</option>
-            <option value="3">3° Ensino Médio</option>
+            <option value="0">Não estuda</option>
+            <option value="1">1° Fundamental I</option>
+            <option value="2">2° Fundamental I</option>
+            <option value="3">3° Fundamental I</option>
+            <option value="4">4° Fundamental I</option>
+            <option value="5">5° Fundamental I</option>
+            <option value="6">6° Fundamental II</option>
+            <option value="7">7° Fundamental II</option>
+            <option value="8">8° Fundamental II</option>
+            <option value="9">9° Fundamental II</option>
+            <option value="10">1° Ensino Médio</option>
+            <option value="11">2° Ensino Médio</option>
+            <option value="12">3° Ensino Médio</option>
+            <option value="13">Ensino Superior</option>
           </select>
         </div>
       </div>
 
+      <!-- Campos de endereço, estado e número na mesma linha -->
       <div class="row mb-3">
-        <div class="col-md-10">
-          <label class="form-label">Endereço</label>
-          <select class="form-select" name="endereco">
-            <option value="1">Rua</option>
-          </select>
-        </div>
-        <div class="col-md-2">
-          <label class="form-label">Número</label>
-          <input type="number" class="form-control" name="numero" required />
-        </div>
-      </div>
+  <div class="col-md-4">
+    <label class="form-label">Rua</label>
+    <input type="text" class="form-control" name="rua" required />
+  </div>
+
+  <div class="col-md-3">
+    <label class="form-label">Bairro</label>
+    <input type="text" class="form-control" name="bairro" required />
+  </div>
+
+  <div class="col-md-2">
+  <label class="form-label">Cidade</label>
+  <select class="form-select" name="idcidade" required>
+    <option value="0">
+                --SELECIONE UMA CIDADE--
+              </option>
+    {{#each cidade}}
+      <option value="{{id}}">
+        {{nome}}
+      </option>
+    {{/each}}
+  </select>
+</div>
+
+
+  <div class="col-md-2">
+    <label class="form-label">Estado</label>
+    <select class="form-select" name="estado" required>
+      <option value="0">
+                --SELECIONE UM ESTADO--
+              </option>
+      {{#each estado}}
+        <option value="{{id}}">
+          {{nome}}
+        </option>
+      {{/each}}
+    </select>
+  </div>
+
+  <div class="col-md-1">
+    <label class="form-label">Número</label>
+    <input type="number" class="form-control" name="numero" required />
+  </div>
+</div>
 
       <div class="row mb-3">
         <div class="col-md-6">
@@ -112,8 +164,9 @@
       const data = await res.json();
       
       localStorage.setItem("pessoaId", data.id);
-      window.location.href = `http://localhost:8081/slides`
-      }
-    catch(err){}
-    });
+      window.location.href = `http://localhost:8081/slides`;
+    } catch(err){
+      console.error(err);
+    }
+  });
 </script>

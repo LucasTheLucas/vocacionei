@@ -13,7 +13,7 @@
   <div class="text-center py-5 bg-light">
     <h1 class="mb-4">Bem-vindo ao VOCACIONEI</h1>
     <p class="mb-4">Clique no botão abaixo e faça o teste em menos de 15 minutos!</p>
-    <a href="/cadastrar" class="btn btn-elegante btn-lg">Realizar Teste</a>
+    <a href="/cadastrar" class="btn btn-elegante btn-lg" onclick="verificarCadastro()">Realizar Teste</a>
   </div>
 
   <div class="container-md my-5">
@@ -79,3 +79,20 @@
       </div>
     </div>
   </div>
+
+<script>
+  function verificarCadastro(event) {
+    event.preventDefault();
+    const pessoaId = localStorage.getItem("pessoaId");
+    if (pessoaId && pessoaId !== "0") {
+      window.location.href = "/slides";
+    } else {
+      window.location.href = "/cadastrar";
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const btn = document.querySelector('a[href="/cadastrar"]');
+    if (btn) btn.addEventListener("click", verificarCadastro);
+  });
+</script>
