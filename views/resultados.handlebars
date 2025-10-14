@@ -1,125 +1,112 @@
 <div class="p-3">
-  <div class="container;">
-    <h2 id="pessoa"></h1>
+  <div class="container">
+    <h2 id="pessoa" class="text-center my-4"></h2>
   </div>
   <div class="container">
-    <canvas id="meuGrafico" width="70px" height="20px"></canvas>
+    <canvas id="meuGrafico" height="120"></canvas>
   </div>
 </div>
 
+<!-- Resultados com barras de progresso -->
+<div class="container my-5">
+  <h3 class="text-center mb-4">Detalhes do seu teste</h3>
+  <div id="barrasProgresso"></div>
+</div>
 
-  <script>
-    const credibilidade = JSON.parse(localStorage.getItem("credibilidade"))
-    const dadosBrutos = JSON.parse(localStorage.getItem("valores"));
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const credibilidade = JSON.parse(localStorage.getItem("credibilidade"))
+  const dadosBrutos = JSON.parse(localStorage.getItem("valores"));
 
-    if(dadosBrutos == null)
-    {
-      window.location.href = `http://localhost:8081/`
+  if(dadosBrutos == null) {
+    window.location.href = `http://localhost:8081/`
+  }
+
+  const dados = dadosBrutos.slice(6, dadosBrutos.length - 6);
+
+  let R = 0, I = 0, A = 0, S = 0, E = 0, C = 0;
+
+  for (const dado of dados) {
+    const valor = Number(dado.valor)
+    switch (dado.tipo) {
+      case "R": R += valor; break;
+      case "I": I += valor; break;
+      case "A": A += valor; break;
+      case "S": S += valor; break;
+      case "E": E += valor; break;
+      case "C": C += valor; break;
     }
+  }
 
-    const dados = dadosBrutos.slice(6, dadosBrutos.length - 6);
+  const filtro = [
+    { valor: R, tipo: "REALISTA", cor: "success" },
+    { valor: I, tipo: "INVESTIGADOR", cor: "primary" },
+    { valor: A, tipo: "ARTISTICO", cor: "warning" },
+    { valor: S, tipo: "SOCIAL", cor: "purple" },
+    { valor: E, tipo: "EMPREENDEDOR", cor: "danger" },
+    { valor: C, tipo: "CONVENCIONAL", cor: "info" }
+  ];
 
-    console.log(credibilidade)
-    console.log(dados)
-    
-    let R = 0;
-    let I = 0;
-    let A = 0;
-    let S = 0;
-    let E = 0;
-    let C = 0;
+  const maiorValor = Math.max(...filtro.map(r => r.valor));
+  const maiores = filtro.filter(r => r.valor === maiorValor);
 
-    for (const dado of dados)
-    {
-        valor = Number(dado.valor)
-        switch (dado.tipo)
-        {
-          case "R":
-            R = R + valor
-            break; 
-          case "I":
-            I = I + valor
-            break; 
-          case "A":
-            A = A + valor
-            break; 
-          case "S":
-            S = S + valor
-            break; 
-          case "E":
-            E = E + valor
-            break; 
-          case "C":
-            C = C + valor
-            break; 
-        }
-    }
+  let descricao = "Você é uma pessoa: ";
+  maiores.forEach((r, i) => {
+    if(i === 0) descricao += r.tipo;
+    else if(i === maiores.length -1) descricao += " e " + r.tipo;
+    else descricao += ", " + r.tipo;
+  });
 
-    filtro = [];
-    filtro.push({valor:R, tipo:"REALISTA"});
-    filtro.push({valor:I, tipo:"INVESTIGADOR"});
-    filtro.push({valor:A, tipo:"ARTISTICO"});
-    filtro.push({valor:S, tipo:"SOCIAL"});
-    filtro.push({valor:E, tipo:"EMPREENDEDOR"});
-    filtro.push({valor:C, tipo:"CONVENCIONAL"});
+  document.getElementById("pessoa").textContent = descricao;
 
-    const maiorValor = Math.max(...filtro.map(r => r.valor));
-    const maiores = filtro.filter(r => r.valor === maiorValor);
-    let descricao = "Você é uma pessoa: ";
+  // Cria as barras de progresso
+  const container = document.getElementById("barrasProgresso");
+  filtro.forEach(t => {
+    const porcentagem = ((t.valor / 75) * 100).toFixed(1);
+    const div = document.createElement("div");
+    div.className = "tipo mb-3";
+    div.innerHTML = `
+      <div class="tipo-name">${t.tipo}: ${t.valor} (${porcentagem}%)</div>
+      <div class="progress">
+        <div class="progress-bar bg-${t.cor}" role="progressbar" style="width: ${porcentagem}%" aria-valuenow="${t.valor}" aria-valuemin="0" aria-valuemax="75"></div>
+      </div>
+    `;
+    container.appendChild(div);
+  });
 
-
-    for(maior in maiores)
-    {
-      if(0 == maiores.length-1)
-      {
-        descricao += maiores[maior].tipo
-      }
-      else
-      {
-        if(maior < maiores.length -1)
-        {
-          descricao += ", " + maiores[maior].tipo
-        }
-        else
-        {
-          descricao += " e " + maiores[maior].tipo
-        }
-      }
-    }
-
-    const pessoa = document.getElementById("pessoa");
-    pessoa.textContent = descricao;
-
-    const ctx = document.getElementById("meuGrafico").getContext("2d");
-    const meuGrafico = new Chart(ctx, {
-      type: "bar",
-      data: {
-        labels: ["REALISTA","INVESTIGADOR","ARTISTICO","SOCIAL","EMPRENDEDOR","CONVENCIONAL"],
-        datasets: [
-          {
-            label: null,
-            data: [R,I,A,S,E,C],
-            backgroundColor: "rgba(54, 162, 235, 0.6)",
-            borderColor: "rgba(54, 162, 235, 1)",
-            borderWidth: 1,
-          }
+  // Cria o gráfico com cores iguais ao primeiro exemplo
+  const ctx = document.getElementById("meuGrafico").getContext("2d");
+  new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels: filtro.map(t => t.tipo),
+      datasets: [{
+        label: "Pontuação",
+        data: filtro.map(t => t.valor),
+        backgroundColor: [
+          "rgba(76, 175, 80, 0.6)",
+          "rgba(33, 150, 243, 0.6)",
+          "rgba(255, 193, 7, 0.6)",
+          "rgba(156, 39, 176, 0.6)",
+          "rgba(244, 67, 54, 0.6)",
+          "rgba(0, 188, 212, 0.6)"
         ],
-      },
-      options: {
-        responsive: true,
-        scales: {
-          y: { beginAtZero: true, max: 75 },
-        },
-        plugins: {
-          legend: { display: false }
-        }
-      },
-    });
+        borderColor: "rgba(0,0,0,0.1)",
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: { y: { beginAtZero: true, max: 75 } },
+      plugins: { legend: { display: false } }
+    }
+  });
 
-    const manter = ["pessoaId"];
-    Object.keys(localStorage).forEach((key) => {
-      if (!manter.includes(key)) {
-        localStorage.removeItem(key);
-      }
-    });
-  </script>
+  // Mantém apenas pessoaId no localStorage
+  const manter = ["pessoaId"];
+  Object.keys(localStorage).forEach((key) => {
+    if (!manter.includes(key)) {
+      localStorage.removeItem(key);
+    }
+  });
+</script>

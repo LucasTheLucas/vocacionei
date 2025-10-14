@@ -1,98 +1,112 @@
-  <style>
-    .btn-elegante {
-      background-color: #1e3a5f;
-      color: white;
-      border: none;
-    }
-    .btn-elegante:hover {
-      background-color: #274b75;
-      color: white;
-    }
-  </style>
-  
-  <div class="text-center py-5 bg-light">
-    <h1 class="mb-4">Bem-vindo ao VOCACIONEI</h1>
-    <p class="mb-4">Clique no botão abaixo e faça o teste em menos de 15 minutos!</p>
-    <a href="/cadastrar" class="btn btn-elegante btn-lg" onclick="verificarCadastro()">Realizar Teste</a>
-  </div>
+<!-- Importa o Bootstrap -->
+<link
+  href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+  rel="stylesheet"
+/>
 
-  <div class="container-md my-5">
-    <div class="row">
-      <div class="col-sm-4 py-2">
-        <div class="card h-100">
-          <div class="card-body">
-            <h5 class="card-title">REALISTA</h5>
-            <p class="card-text">Pessoas práticas, que gostam de atividades manuais, ferramentas e máquinas.</p>
-            <a href="#" class="btn btn-elegante">Conheça</a>
-          </div>
+<div class="text-center py-5 bg-light">
+  <h1 class="mb-4">Bem-vindo ao VOCACIONEI</h1>
+  <p class="mb-4">Clique no botão abaixo e faça o teste em menos de 15 minutos!</p>
+
+  <!-- Botão principal -->
+  <button class="btn btn-primary btn-lg" id="btnPrincipal">Realizar Teste</button>
+</div>
+
+<div class="container-md my-5">
+  <div class="row">
+    <!-- REALISTA -->
+    <div class="col-sm-4 py-2">
+      <div class="card h-100">
+        <div class="card-body">
+          <h5 class="card-title">REALISTA</h5>
+          <p class="card-text">Pessoas práticas, que gostam de atividades manuais, ferramentas e máquinas.</p>
+          <a href="#" class="btn btn-outline-primary">Conheça</a>
         </div>
       </div>
+    </div>
 
-      <div class="col-sm-4 py-2">
-        <div class="card h-100">
-          <div class="card-body">
-            <h5 class="card-title">INVESTIGATIVO</h5>
-            <p class="card-text">Pessoas analíticas, curiosas e que gostam de resolver problemas e pesquisar.</p>
-            <a href="#" class="btn btn-elegante">Conheça</a>
-          </div>
+    <!-- INVESTIGATIVO -->
+    <div class="col-sm-4 py-2">
+      <div class="card h-100">
+        <div class="card-body">
+          <h5 class="card-title">INVESTIGADOR</h5>
+          <p class="card-text">Pessoas analíticas, curiosas e que gostam de resolver problemas e pesquisar.</p>
+          <a href="#" class="btn btn-outline-primary">Conheça</a>
         </div>
       </div>
+    </div>
 
-      <div class="col-sm-4 py-2">
-        <div class="card h-100">
-          <div class="card-body">
-            <h5 class="card-title">ARTÍSTICO</h5>
-            <p class="card-text">Pessoas criativas, expressivas e que valorizam originalidade.</p>
-            <a href="#" class="btn btn-elegante">Conheça</a>
-          </div>
+    <!-- ARTÍSTICO -->
+    <div class="col-sm-4 py-2">
+      <div class="card h-100">
+        <div class="card-body">
+          <h5 class="card-title">ARTÍSTICO</h5>
+          <p class="card-text">Pessoas criativas, expressivas e que valorizam originalidade.</p>
+          <a href="#" class="btn btn-outline-primary">Conheça</a>
         </div>
       </div>
+    </div>
 
-      <div class="col-sm-4 py-2">
-        <div class="card h-100">
-          <div class="card-body">
-            <h5 class="card-title">SOCIAL</h5>
-            <p class="card-text">Pessoas que gostam de ajudar, ensinar, orientar ou cuidar de outras pessoas.</p>
-            <a href="#" class="btn btn-elegante">Conheça</a>
-          </div>
+    <!-- SOCIAL -->
+    <div class="col-sm-4 py-2">
+      <div class="card h-100">
+        <div class="card-body">
+          <h5 class="card-title">SOCIAL</h5>
+          <p class="card-text">Pessoas que gostam de ajudar, ensinar, orientar ou cuidar de outras pessoas.</p>
+          <a href="#" class="btn btn-outline-primary">Conheça</a>
         </div>
       </div>
+    </div>
 
-      <div class="col-sm-4 py-2">
-        <div class="card h-100">
-          <div class="card-body">
-            <h5 class="card-title">EMPREENDEDOR</h5>
-            <p class="card-text">Pessoas que gostam de liderar, persuadir e tomar decisões para atingir objetivos.</p>
-            <a href="#" class="btn btn-elegante">Conheça</a>
-          </div>
+    <!-- EMPREENDEDOR -->
+    <div class="col-sm-4 py-2">
+      <div class="card h-100">
+        <div class="card-body">
+          <h5 class="card-title">EMPREENDEDOR</h5>
+          <p class="card-text">Pessoas que gostam de liderar, persuadir e tomar decisões para atingir objetivos.</p>
+          <a href="#" class="btn btn-outline-primary">Conheça</a>
         </div>
       </div>
+    </div>
 
-      <div class="col-sm-4 py-2">
-        <div class="card h-100">
-          <div class="card-body">
-            <h5 class="card-title">CONVENCIONAL</h5>
-            <p class="card-text">Pessoas organizadas, que gostam de trabalhar com dados, sistemas e processos.</p>
-            <a href="#" class="btn btn-elegante">Conheça</a>
-          </div>
+    <!-- CONVENCIONAL -->
+    <div class="col-sm-4 py-2">
+      <div class="card h-100">
+        <div class="card-body">
+          <h5 class="card-title">CONVENCIONAL</h5>
+          <p class="card-text">Pessoas organizadas, que gostam de trabalhar com dados, sistemas e processos.</p>
+          <a href="#" class="btn btn-outline-primary">Conheça</a>
         </div>
       </div>
     </div>
   </div>
+</div>
 
 <script>
-  function verificarCadastro(event) {
-    event.preventDefault();
-    const pessoaId = localStorage.getItem("pessoaId");
-    if (pessoaId && pessoaId !== "0") {
-      window.location.href = "/slides";
-    } else {
-      window.location.href = "/cadastrar";
-    }
-  }
+document.addEventListener("DOMContentLoaded", () => {
+  const pessoaId = localStorage.getItem("pessoaId");
+  const btnPrincipal = document.getElementById("btnPrincipal");
 
-  document.addEventListener("DOMContentLoaded", () => {
-    const btn = document.querySelector('a[href="/cadastrar"]');
-    if (btn) btn.addEventListener("click", verificarCadastro);
+  // Botão "Realizar Teste"
+  btnPrincipal.addEventListener("click", () => {
+    if (pessoaId && pessoaId !== "0") {
+      window.location.href = "/slides"; // Já fez → slides
+    } else {
+      window.location.href = "/cadastrar"; // Não fez → cadastro
+    }
   });
+
+  // Botão "Ver Resultados"
+  if (pessoaId && pessoaId !== "0") {
+    const btnResultados = document.createElement("button");
+    btnResultados.textContent = "Ver Resultados";
+    btnResultados.className = "btn btn-success btn-lg ms-3";
+
+    btnResultados.addEventListener("click", () => {
+      window.location.href = `/resultados/${pessoaId}`;
+    });
+
+    btnPrincipal.insertAdjacentElement("afterend", btnResultados);
+  }
+});
 </script>

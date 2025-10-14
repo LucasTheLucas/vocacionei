@@ -43,6 +43,26 @@ app.get("/cadastrar", async (req, res) => {
 });
 app.get("/termos", (req, res) => res.render("termos"));
 app.get("/resultados", (req, res) => res.render("resultados"));
+app.get("/resultados/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const pessoa = await Pessoa.findOne({
+      where: { id },
+      raw: true,
+    });
+
+    if (!pessoa) {
+      return res.send("Pessoa não encontrada.");
+    }
+
+    // Renderiza o template "resultados" com os dados da pessoa
+    res.render("resultadosprincipal", { pessoa });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Erro ao carregar resultados.");
+  }
+});
+
 app.get("/administrativo", (req, res) => res.render("administrativo"));
 
 app.get("/slides", (req, res) => {
