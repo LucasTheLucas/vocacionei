@@ -130,6 +130,21 @@ app.get("/listainstituicao", async (req, res) => {
   res.render("listaescolas");
 });
 
+app.get("/links", async (req, res) =>
+  {
+    const instituicoes = await Instituicao.findAll({
+      where: { inativo: false },
+      include: [
+        { model: Cidade, attributes: ['nome'], as: 'cidadeData' },
+        { model: Estado, attributes: ['nome'], as: 'estadoData' }
+      ],
+      raw: true,
+      nest: true
+    });
+
+    res.render("links", {instituicoes});
+  })
+
 app.get("/listarinstituicao", async (req, res) => {
   try {
     const instituicoes = await Instituicao.findAll({

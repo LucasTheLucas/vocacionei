@@ -1,0 +1,117 @@
+<body>
+  <div class="container mt-5 py-5">
+    <div class="card shadow p-4">
+      <div class="row align-items-center">
+        <div class="col-md-8">
+          <h2 class="mb-4">Gerador de links</h2>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Instituição de ensino</label>
+              <select id="instituicao" class="form-select">
+                <option value="0">--SELECIONE UMA INSTITUIÇÃO--</option>
+                {{#each instituicoes}}
+                  <option value="{{id}}">{{nome}}</option>
+                {{/each}}
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Série</label>
+              <select id="serie" class="form-select">
+                <option value="0">--SELECIONE UMA SÉRIE--</option>
+                <option value="0">Não estuda</option>
+                <option value="1">1° Fundamental I</option>
+                <option value="2">2° Fundamental I</option>
+                <option value="3">3° Fundamental I</option>
+                <option value="4">4° Fundamental I</option>
+                <option value="5">5° Fundamental I</option>
+                <option value="6">6° Fundamental II</option>
+                <option value="7">7° Fundamental II</option>
+                <option value="8">8° Fundamental II</option>
+                <option value="9">9° Fundamental II</option>
+                <option value="10">1° Ensino Médio</option>
+                <option value="11">2° Ensino Médio</option>
+                <option value="12">3° Ensino Médio</option>
+                <option value="13">Ensino Superior</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 text-center">
+  <canvas id="qrcode"></canvas>
+  <div class="mt-3 d-flex justify-content-center gap-2">
+    <a id="btnCopiar" href="#" class="btn" style="background-color: #970a97; color: white; border: none;">
+      <i class="bi bi-copy"></i> Copiar
+    </a>
+    <a id="btnAcessar" href="#" class="btn" style="background-color: #970a97; color: white; border: none;">
+      Acessar
+    </a>
+  </div>
+</div>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+
+  <script>
+  const canvas = document.getElementById("qrcode");
+  const instituicao = document.getElementById("instituicao");
+  const serie = document.getElementById("serie");
+  const btnCopiar = document.getElementById("btnCopiar");
+  const btnAcessar = document.getElementById("btnAcessar");
+
+  // Gera o QRCode
+  function gerarQR(texto, vazio) {
+    QRCode.toCanvas(canvas, texto || " ", {
+      width: 250,
+      color: {
+        dark: vazio ? "#ffffff" : "#000000",
+        light: "#ffffff"
+      }
+    });
+  }
+
+  // Atualiza QRCode e links
+  function atualizarQR() {
+    const instValue = instituicao.value;
+    const serieValue = serie.value;
+    const instText = instituicao.options[instituicao.selectedIndex].text;
+    const serieText = serie.options[serie.selectedIndex].text;
+
+    // Verifica se ambos estão selecionados
+    if (instValue !== "0" && serieValue !== "0") {
+      const link = `http://localhost:8081/cadastrar?instituicao=${instValue}&serie=${serieValue}`;
+      gerarQR(link, false);
+
+      btnAcessar.href = link;
+      btnAcessar.classList.remove("disabled");
+      btnCopiar.dataset.link = link;
+
+    } else {
+      gerarQR("", true);
+      btnAcessar.href = "#";
+      btnCopiar.removeAttribute("data-link");
+    }
+  }
+
+  // Evento: atualizar QR ao trocar seleção
+  instituicao.addEventListener("change", atualizarQR);
+  serie.addEventListener("change", atualizarQR);
+
+  // Evento: copiar link
+  btnCopiar.addEventListener("click", (e) => {
+    e.preventDefault();
+    const link = btnCopiar.dataset.link;
+    if (link) {
+      navigator.clipboard.writeText(link);
+      btnCopiar.textContent = "Copiado!";
+      setTimeout(() => (btnCopiar.innerHTML = '<i class="bi bi-copy"></i> Copiar'), 1500);
+    }
+  });
+
+  gerarQR("", true);
+</script>
+
+</body>
