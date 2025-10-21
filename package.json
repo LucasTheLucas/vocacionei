@@ -1,0 +1,13 @@
+{
+  "dependencies": {
+    "body-parser": "^2.2.0",
+    "express": "^5.1.0",
+    "express-handlebars": "^8.0.2",
+    "mysql2": "^3.14.3",
+    "nodemailer": "^7.0.6",
+    "nodemon": "^3.1.10",
+    "pdfkit": "^0.17.2",
+    "pdfkit-table": "^0.1.99",
+    "sequelize": "^6.37.7"
+  }
+}
