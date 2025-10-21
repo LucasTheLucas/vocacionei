@@ -1,8 +1,8 @@
 const Sequelize = require('sequelize');
 
-const sequelize = new Sequelize('vocacionei', 'root', '123456789', {
+const sequelize = new Sequelize('vocacionei', 'root', 'Lucas@06', {
     host: "localhost",
-    dialect: "mysql"
+    dialect: "mariadb"
 });
 
 module.exports = {
