@@ -36,6 +36,4 @@ const Pessoa = db.sequelize.define(
   }
 );
 
-db.sequelize.sync({ force: true })
-
 module.exports = Pessoa;
