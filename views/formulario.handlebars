@@ -48,16 +48,13 @@
         <div class="col-md-6">
           <label class="form-label">Instituição de ensino</label>
           <select id="ensino" class="form-select" name="ensino">
-            <option value="0">
-                --SELECIONE UMA INSTITUIÇÃO--
-              </option>
+            <option value="0">--SELECIONE UMA INSTITUIÇÃO--</option>
             {{#each instituicao}}
-              <option value="{{id}}">
-                {{nome}}
-              </option>
-      {{/each}}
+              <option value="{{id}}">{{nome}}</option>
+            {{/each}}
           </select>
         </div>
+
         <div class="col-md-6">
           <label class="form-label">Série</label>
           <select class="form-select" name="serie">
@@ -79,61 +76,51 @@
         </div>
       </div>
 
-      <!-- Campos de endereço, estado e número na mesma linha -->
       <div class="row mb-3">
-  <div class="col-md-4">
-    <label class="form-label">Rua</label>
-    <input type="text" class="form-control" name="rua" required />
-  </div>
+        <div class="col-md-4">
+          <label class="form-label">Rua</label>
+          <input type="text" class="form-control" name="rua" required />
+        </div>
 
-  <div class="col-md-3">
-    <label class="form-label">Bairro</label>
-    <input type="text" class="form-control" name="bairro" required />
-  </div>
+        <div class="col-md-3">
+          <label class="form-label">Bairro</label>
+          <input type="text" class="form-control" name="bairro" required />
+        </div>
 
-  <div class="col-md-2">
-  <label class="form-label">Cidade</label>
-  <select class="form-select" name="idcidade" required>
-    <option value="0">
-                --SELECIONE UMA CIDADE--
-              </option>
-    {{#each cidade}}
-      <option value="{{id}}">
-        {{nome}}
-      </option>
-    {{/each}}
-  </select>
-</div>
+        <div class="col-md-2">
+          <label class="form-label">Cidade</label>
+          <select class="form-select" name="idcidade" required>
+            <option value="0">--SELECIONE UMA CIDADE--</option>
+            {{#each cidade}}
+              <option value="{{id}}">{{nome}}</option>
+            {{/each}}
+          </select>
+        </div>
 
+        <div class="col-md-2">
+          <label class="form-label">Estado</label>
+          <select class="form-select" name="estado" required>
+            <option value="0">--SELECIONE UM ESTADO--</option>
+            {{#each estado}}
+              <option value="{{id}}">{{nome}}</option>
+            {{/each}}
+          </select>
+        </div>
 
-  <div class="col-md-2">
-    <label class="form-label">Estado</label>
-    <select class="form-select" name="estado" required>
-      <option value="0">
-                --SELECIONE UM ESTADO--
-              </option>
-      {{#each estado}}
-        <option value="{{id}}">
-          {{nome}}
-        </option>
-      {{/each}}
-    </select>
-  </div>
-
-  <div class="col-md-1">
-    <label class="form-label">Número</label>
-    <input type="number" class="form-control" name="numero" required />
-  </div>
-</div>
+        <div class="col-md-1">
+          <label class="form-label">Número</label>
+          <input type="number" class="form-control" name="numero" required />
+        </div>
+      </div>
 
       <div class="row mb-3">
         <div class="col-md-6">
           <label class="form-label">Senha</label>
-          <input type="password" class="form-control" name="senha" required />
+          <input type="password" class="form-control" name="senha" id="senha" required />
         </div>
         <div class="col-md-6">
           <label class="form-label">Confirme a senha</label>
-          <input type="password" class="form-control" name="senhaconf" required />
+          <input type="password" class="form-control" name="senhaconf" id="senhaconf" required />
         </div>
       </div>
 
@@ -150,54 +137,68 @@
 </div>
 
 <script>
-  // Função que lê parâmetros da URL
-  function getParams() {
-    const params = new URLSearchParams(window.location.search);
-    return {
-      instituicao: params.get("instituicao"),
-      serie: params.get("serie")
-    };
+function getParams() {
+  const params = new URLSearchParams(window.location.search);
+  return { instituicao: params.get("instituicao"), serie: params.get("serie") };
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  const { instituicao, serie } = getParams();
+  const selectInstituicao = document.getElementById("ensino");
+  const selectSerie = document.querySelector("select[name='serie']");
+
+  if (instituicao && instituicao !== "0") {
+    selectInstituicao.value = instituicao;
+    selectInstituicao.disabled = true;
+  }
+  if (serie && serie !== "0") {
+    selectSerie.value = serie;
+    selectSerie.disabled = true;
+  }
+});
+
+document.getElementById("cadastroForm").addEventListener("submit", async function (e) {
+  e.preventDefault();
+
+  const formData = Object.fromEntries(new FormData(this).entries());
+
+  if (formData.senha !== formData.senhaconf) {
+    Swal.fire({
+      icon: "error",
+      title: "Senhas não coincidem",
+      text: "Por favor, verifique e tente novamente!"
+    });
+    return;
   }
 
-  // Quando a página carregar
-  window.addEventListener("DOMContentLoaded", () => {
-    const { instituicao, serie } = getParams();
+  try {
+    const res = await fetch("/addaluno", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formData)
+    });
 
-    // Seletores dos campos
-    const selectInstituicao = document.getElementById("ensino");
-    const selectSerie = document.querySelector("select[name='serie']");
+    const data = await res.json();
+    localStorage.setItem("pessoaId", data.id);
 
-    // Se tiver parâmetros válidos, aplica
-    if (instituicao && instituicao !== "0") {
-      selectInstituicao.value = instituicao;
-      selectInstituicao.disabled = true; // bloqueia alteração
-    }
+    Swal.fire({
+      icon: "success",
+      title: "Cadastro concluído!",
+      text: "Você será redirecionado...",
+      timer: 2000,
+      showConfirmButton: false
+    });
 
-    if (serie && serie !== "0") {
-      selectSerie.value = serie;
-      selectSerie.disabled = true; // bloqueia alteração
-    }
-  });
+    setTimeout(() => {
+      window.location.href = "http://localhost:8081/slides";
+    }, 2000);
 
-  // Evento de envio do formulário
-  document.getElementById("cadastroForm").addEventListener("submit", async function(e) {
-    e.preventDefault();
-    const formData = Object.fromEntries(new FormData(this).entries());
-
-    try {
-      const res = await fetch("/addaluno", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData)
-      });
-
-      const data = await res.json();
-
-      localStorage.setItem("pessoaId", data.id);
-      window.location.href = `http://localhost:8081/slides`;
-    } catch (err) {
-      console.error(err);
-    }
-  });
+  } catch (err) {
+    Swal.fire({
+      icon: "error",
+      title: "Erro no servidor",
+      text: "Tente novamente mais tarde."
+    });
+  }
+});
 </script>
-
