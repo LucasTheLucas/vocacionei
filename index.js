@@ -9,6 +9,7 @@ const Imagen = require("./models/Imagens");
 const Instituicao = require("./models/Instituicao");
 const Estado = require("./models/Estado");
 const Cidade = require("./models/Cidade");
+const Teste = require("./models/Teste")
 
 const PDFDocument = require("pdfkit");
 require("pdfkit-table");
@@ -46,22 +47,37 @@ app.get("/resultados", (req, res) => res.render("resultados"));
 app.get("/resultados/:id", async (req, res) => {
   const { id } = req.params;
   try {
-    const pessoa = await Pessoa.findOne({
-      where: { id },
-      raw: true,
+    const teste = await Teste.findOne({
+      where: { idpessoa: id }, 
+      order: [['datahora', 'DESC']], 
+      raw: true
     });
 
-    if (!pessoa) {
-      return res.send("Pessoa não encontrada.");
+    if (!teste) {
+      return res.send("Teste não encontrada.");
     }
 
     // Renderiza o template "resultados" com os dados da pessoa
-    res.render("resultadosprincipal", { pessoa });
+    res.render("resultadosprincipal", { teste });
   } catch (err) {
     console.error(err);
     res.status(500).send("Erro ao carregar resultados.");
   }
 });
+
+app.get("/listartestes/:id", async (req, res) => 
+  {
+    const pessoaId = req.params.id;
+
+    const todosExcetoUltimo = await Teste.findAll({
+      where: { idpessoa: pessoaId },
+      order: [['id', 'DESC']],
+      offset: 1,               
+      raw: true
+    });
+
+    res.json(todosExcetoUltimo)
+  })
 
 app.get("/administrativo", (req, res) => res.render("administrativo"));
 
@@ -119,7 +135,7 @@ app.get("/excluirInstituicao/:id", async (req, res) => {
   try {
     const id = req.params.id;
     await Instituicao.update({ inativo: true }, { where: { id } });
-    res.send("Instituição inativada com sucesso");
+    res.redirect("/listainstituicao")
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Erro ao inativar instituição" });
@@ -199,10 +215,11 @@ app.post("/addaluno", (req, res) => {
 
 app.post("/updatealuno", async (req, res) => {
   const { id, resr, resi, resa, ress, rese, resc, totalb, totalv } = req.body;
+  const datahora = new Date();
+  const idpessoa = id;
   try {
-    await Pessoa.update(
-      { resr, resi, resa, ress, rese, resc, totalb, totalv },
-      { where: { id } }
+    await Teste.create(
+      { idpessoa, datahora, resr, resi, resa, ress, rese, resc, totalb, totalv }
     );
 
     const pessoa = await Pessoa.findOne({ where: { id } });

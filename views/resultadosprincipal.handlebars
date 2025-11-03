@@ -1,45 +1,55 @@
-<!-- Importa o Bootstrap -->
-<link
-  href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-  rel="stylesheet"
-/>
+<!-- Importa Bootstrap e Bootstrap Table -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.21.1/dist/bootstrap-table.min.css">
 
 <div class="p-3">
   <div class="container">
     <h2 id="pessoa" class="text-center my-4"></h2>
   </div>
-  <div class="container">
+
+  <div class="container mb-4">
     <canvas id="meuGrafico" height="120"></canvas>
+  </div>
+
+  <div class="container">
+    <table id="table"
+           class="table table-striped"
+           data-pagination="true"
+           data-search="true">
+      <thead>
+        <tr>
+          <th data-field="id" data-sortable="true">ID</th>
+          <th data-field="datahora" data-sortable="true">Data</th>
+          <th data-field="excluir" data-formatter="deleteFormatter">Visualizar</th>
+        </tr>
+      </thead>
+    </table>
   </div>
 </div>
 
-<!-- Resultados com barras de progresso -->
-<div class="container my-5">
-  <h3 class="text-center mb-4">Detalhes do seu teste</h3>
-  <div id="barrasProgresso"></div>
-</div>
-
-<!-- Chart.js -->
+<!-- Scripts -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://unpkg.com/bootstrap-table@1.21.1/dist/bootstrap-table.min.js"></script>
+
 <script>
   // Dados da pessoa enviados pelo Handlebars
-  const pessoa = {{{json pessoa}}}
+  const teste = {{{json teste}}};
 
+  // Configuração do gráfico
   const tipos = [
-    { nome: "REALISTA", valor: pessoa.resr, cor: "success" },
-    { nome: "INVESTIGADOR", valor: pessoa.resi, cor: "primary" },
-    { nome: "ARTÍSTICO", valor: pessoa.resa, cor: "warning" },
-    { nome: "SOCIAL", valor: pessoa.ress, cor: "purple" }, // custom color
-    { nome: "EMPREENDEDOR", valor: pessoa.rese, cor: "danger" },
-    { nome: "CONVENCIONAL", valor: pessoa.resc, cor: "info" }
+    { nome: "REALISTA", valor: teste.resr, cor: "rgba(76, 175, 80, 0.6)" },
+    { nome: "INVESTIGADOR", valor: teste.resi, cor: "rgba(33, 150, 243, 0.6)" },
+    { nome: "ARTÍSTICO", valor: teste.resa, cor: "rgba(255, 193, 7, 0.6)" },
+    { nome: "SOCIAL", valor: teste.ress, cor: "rgba(156, 39, 176, 0.6)" },
+    { nome: "EMPREENDEDOR", valor: teste.rese, cor: "rgba(244, 67, 54, 0.6)" },
+    { nome: "CONVENCIONAL", valor: teste.resc, cor: "rgba(0, 188, 212, 0.6)" }
   ];
 
-  // Descobre os maiores valores
   const maiorValor = Math.max(...tipos.map(t => t.valor));
   const maiores = tipos.filter(t => t.valor === maiorValor);
 
-  // Descrição da pessoa
-  let descricao = `Olá ${pessoa.nome}, você é uma pessoa: `;
+  let descricao = "Você é uma pessoa: ";
   maiores.forEach((t, i) => {
     if (i === 0) descricao += t.nome;
     else if (i === maiores.length - 1) descricao += " e " + t.nome;
@@ -48,22 +58,6 @@
 
   document.getElementById("pessoa").textContent = descricao;
 
-  // Cria as barras de progresso dinamicamente
-  const container = document.getElementById("barrasProgresso");
-  tipos.forEach(t => {
-    const porcentagem = ((t.valor / 75) * 100).toFixed(1);
-    const div = document.createElement("div");
-    div.className = "tipo mb-3";
-    div.innerHTML = `
-      <div class="tipo-name">${t.nome}: ${t.valor} (${porcentagem}%)</div>
-      <div class="progress">
-        <div class="progress-bar bg-${t.cor}" role="progressbar" style="width: ${porcentagem}%" aria-valuenow="${t.valor}" aria-valuemin="0" aria-valuemax="75"></div>
-      </div>
-    `;
-    container.appendChild(div);
-  });
-
-  // Cria o gráfico
   const ctx = document.getElementById("meuGrafico").getContext("2d");
   new Chart(ctx, {
     type: "bar",
@@ -72,14 +66,7 @@
       datasets: [{
         label: "Pontuação",
         data: tipos.map(t => t.valor),
-        backgroundColor: [
-          "rgba(76, 175, 80, 0.6)",
-          "rgba(33, 150, 243, 0.6)",
-          "rgba(255, 193, 7, 0.6)",
-          "rgba(156, 39, 176, 0.6)",
-          "rgba(244, 67, 54, 0.6)",
-          "rgba(0, 188, 212, 0.6)"
-        ],
+        backgroundColor: tipos.map(t => t.cor),
         borderColor: "rgba(0,0,0,0.1)",
         borderWidth: 1
       }]
@@ -90,4 +77,27 @@
       plugins: { legend: { display: false } }
     }
   });
+
+  // Pega o ID da pessoa da URL (/resultados/:id)
+  const pathParts = window.location.pathname.split('/');
+  const pessoaId = pathParts[pathParts.length - 1];
+
+  // Inicializa a tabela com Bootstrap Table
+  $('#table').bootstrapTable({
+    url: `/listartestes/${pessoaId}`,
+    columns: [
+      { field: "id", title: "ID", sortable: true },
+      { field: "datahora", title: "Data", sortable: true, formatter: dateFormatter },
+      { field: "excluir", title: "Visualizar", formatter: deleteFormatter }
+    ]
+  });
+
+  function dateFormatter(value) {
+    const d = new Date(value);
+    return d.toLocaleString('pt-BR');
+  }
+
+  function deleteFormatter(value, row) {
+    return `<a href="/resultados/${row.idpessoa}" class="btn btn-sm btn-primary">Ver</a>`;
+  }
 </script>
