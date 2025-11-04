@@ -3,6 +3,7 @@ const app = express();
 const { engine } = require("express-handlebars");
 const bodyParser = require("body-parser");
 const nodemailer = require('nodemailer');
+const path = require("path");
 
 const Pessoa = require("./models/Pessoa");
 const Imagen = require("./models/Imagens");
@@ -13,6 +14,9 @@ const Teste = require("./models/Teste")
 
 const PDFDocument = require("pdfkit");
 require("pdfkit-table");
+
+// --- FAVICON ---
+app.use("/assets", express.static(path.join(__dirname, "assets")));
 
 // --- CONFIGURAÇÕES DO HANDLEBARS ---
 app.engine(
