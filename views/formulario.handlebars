@@ -127,7 +127,7 @@
       <div class="form-check mb-4">
         <input class="form-check-input" type="checkbox" name="termos" required />
         <label class="form-check-label">
-          Aceito os <a href="http://localhost:8081/termos">termos de serviço</a>
+          Aceito os <a href="/termos">termos de serviço</a>
         </label>
       </div>
 
@@ -139,11 +139,11 @@
 <script>
 function getParams() {
   const params = new URLSearchParams(window.location.search);
-  return { instituicao: params.get("instituicao"), serie: params.get("serie") };
+  return { login: params.get("login"), instituicao: params.get("instituicao"), serie: params.get("serie") };
 }
 
 window.addEventListener("DOMContentLoaded", () => {
-  const { instituicao, serie } = getParams();
+  const {login, instituicao, serie } = getParams();
   const selectInstituicao = document.getElementById("ensino");
   const selectSerie = document.querySelector("select[name='serie']");
 
@@ -189,8 +189,14 @@ document.getElementById("cadastroForm").addEventListener("submit", async functio
       showConfirmButton: false
     });
 
+    const { login } = getParams();
+
     setTimeout(() => {
-      window.location.href = "http://localhost:8081/slides";
+      if (login === "true") {
+        window.location.href = "http://localhost:8081/";
+      } else {
+        window.location.href = "http://localhost:8081/slides";
+      }
     }, 2000);
 
   } catch (err) {

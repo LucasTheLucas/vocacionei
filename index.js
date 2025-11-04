@@ -39,6 +39,11 @@ Instituicao.belongsTo(Cidade, { foreignKey: 'idcidade', as: 'cidadeData' });
 Instituicao.belongsTo(Estado, { foreignKey: 'idestado', as: 'estadoData' });
 
 // --- ROTAS - PÁGINAS ---
+
+// --LOGIN
+app.get("/login", (req,res) => res.render("login", {layout: false}))
+
+
 app.get("/", (req, res) => res.render("principal"));
 app.get("/cadastrar", async (req, res) => {
   const estado = await Estado.findAll({ raw: true });
