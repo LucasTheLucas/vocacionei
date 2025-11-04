@@ -57,7 +57,6 @@ app.get("/resultados/:id", async (req, res) => {
       return res.send("Teste não encontrada.");
     }
 
-    // Renderiza o template "resultados" com os dados da pessoa
     res.render("resultadosprincipal", { teste });
   } catch (err) {
     console.error(err);
@@ -77,6 +76,19 @@ app.get("/listartestes/:id", async (req, res) =>
     });
 
     res.json(todosExcetoUltimo)
+  })
+
+app.get("/resultadoindividual/:id", async (req, res) =>
+  {
+    const testeId = req.params.id;
+
+    const teste = await Teste.findOne({
+      where: { id: testeId },
+      order: [['id', 'DESC']],
+      raw: true
+    });
+
+    res.render("resultadosindividual", {teste})
   })
 
 app.get("/administrativo", (req, res) => res.render("administrativo"));

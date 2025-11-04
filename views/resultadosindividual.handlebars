@@ -11,32 +11,14 @@
     <canvas id="meuGrafico" height="120"></canvas>
   </div>
 
-  <div class="container">
-    <table id="table"
-           class="table table-striped"
-           data-pagination="true"
-           data-search="true">
-      <thead>
-        <tr>
-          <th data-field="id" data-sortable="true">ID</th>
-          <th data-field="datahora" data-sortable="true">Data</th>
-          <th data-field="excluir" data-formatter="deleteFormatter">Visualizar</th>
-        </tr>
-      </thead>
-    </table>
-  </div>
-</div>
-
 <!-- Scripts -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://unpkg.com/bootstrap-table@1.21.1/dist/bootstrap-table.min.js"></script>
 
 <script>
-  // Dados da pessoa enviados pelo Handlebars
   const teste = {{{json teste}}};
 
-  // Configuração do gráfico
   const tipos = [
     { nome: "REALISTA", valor: teste.resr, cor: "rgba(76, 175, 80, 0.6)" },
     { nome: "INVESTIGADOR", valor: teste.resi, cor: "rgba(33, 150, 243, 0.6)" },
@@ -78,26 +60,4 @@
     }
   });
 
-  // Pega o ID da pessoa da URL (/resultados/:id)
-  const pathParts = window.location.pathname.split('/');
-  const pessoaId = pathParts[pathParts.length - 1];
-
-  // Inicializa a tabela com Bootstrap Table
-  $('#table').bootstrapTable({
-    url: `/listartestes/${pessoaId}`,
-    columns: [
-      { field: "id", title: "ID", sortable: true },
-      { field: "datahora", title: "Data", sortable: true, formatter: dateFormatter },
-      { field: "excluir", title: "Visualizar", formatter: deleteFormatter }
-    ]
-  });
-
-  function dateFormatter(value) {
-    const d = new Date(value);
-    return d.toLocaleString('pt-BR');
-  }
-
-  function deleteFormatter(value, row) {
-    return `<a href="/resultadoindividual/${row.id}" class="btn btn-sm btn-primary">Ver</a>`;
-  }
 </script>
