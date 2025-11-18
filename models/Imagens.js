@@ -1,4 +1,4 @@
-const db = require('./db.js');
+const db = require('./Db.js');
 
 const Imagen = db.sequelize.define('imagens', {
     basemq: { type: db.Sequelize.TEXT('medium'), allowNull: false },
