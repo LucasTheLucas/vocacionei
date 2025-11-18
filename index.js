@@ -11,6 +11,8 @@ const Instituicao = require("./models/Instituicao");
 const Estado = require("./models/Estado");
 const Cidade = require("./models/Cidade");
 const Teste = require("./models/Teste")
+const db = require("./models/Db");
+
 
 const PDFDocument = require("pdfkit");
 const PORT = process.env.PORT || 3000;
