@@ -1,4 +1,4 @@
-const { Sequelize } = require("sequelize");
+const Sequelize = require("sequelize");
 
 const sequelize = new Sequelize(
   'railway',
@@ -12,4 +12,7 @@ const sequelize = new Sequelize(
   }
 );
 
-module.exports = sequelize;
+module.exports = {
+  Sequelize,
+  sequelize
+};
