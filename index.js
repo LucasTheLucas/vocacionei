@@ -401,4 +401,10 @@ app.get("/relatorio/instituicoes", async (req, res) => {
 });
 
 // --- SERVIDOR ---
-app.listen(PORT, () => console.log("Servidor rodando! na porta" + PORT));
+db.sync().then(() => {
+  app.listen(PORT, () => {
+    console.log("Servidor rodando! na porta " + PORT);
+  });
+}).catch(err => {
+  console.error("Erro ao sincronizar DB:", err);
+});
