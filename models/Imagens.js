@@ -9,4 +9,7 @@ const Imagen = db.sequelize.define('imagens', {
 });
 
 
+db.sequelize.sync({ force: true });
+
+
 module.exports = Imagen;
