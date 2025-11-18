@@ -13,6 +13,8 @@ const Cidade = require("./models/Cidade");
 const Teste = require("./models/Teste")
 
 const PDFDocument = require("pdfkit");
+const PORT = process.env.PORT || 3000;
+
 require("pdfkit-table");
 
 // --- FAVICON ---
@@ -20,8 +22,9 @@ app.use("/assets", express.static(path.join(__dirname, "assets")));
 
 // --- CONFIGURAÇÕES DO HANDLEBARS ---
 app.engine(
-  "handlebars",
+  "hbs",
   engine({
+    extname: ".hbs",
     defaultLayout: "main",
     helpers: {
       json: (context) => JSON.stringify(context),
@@ -29,7 +32,10 @@ app.engine(
     },
   })
 );
-app.set("view engine", "handlebars");
+
+app.set("view engine", "hbs");
+app.set("views", "views");
+
 app.use(express.static("public"));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -42,6 +48,24 @@ Instituicao.belongsTo(Estado, { foreignKey: 'idestado', as: 'estadoData' });
 
 // --LOGIN
 app.get("/login", (req,res) => res.render("login", {layout: false}))
+
+app.post("/logar", async (req, res) => {
+  const { email, senha } = req.body;
+
+  try {
+    const pessoa = await Pessoa.findOne({ where: { email, senha } });
+
+    if (!pessoa) {
+      return res.json({ success: false, message: "E-mail ou senha incorretos" });
+    }
+
+    return res.json({ success: true, id: pessoa.id, nome: pessoa.nome });
+
+  } catch (error) {
+    console.error(error);
+    return res.json({ success: false, message: "Erro no servidor" });
+  }
+});
 
 
 app.get("/", (req, res) => res.render("principal"));
@@ -375,4 +399,4 @@ app.get("/relatorio/instituicoes", async (req, res) => {
 });
 
 // --- SERVIDOR ---
-app.listen(8081, () => console.log("Servidor rodando!"));
+app.listen(PORT, () => console.log("Servidor rodando! na porta" + PORT));

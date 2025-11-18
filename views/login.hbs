@@ -41,4 +41,53 @@
   </div>
 </div>
 </body>
+
+<script>
+document.getElementById("loginForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const email = document.getElementById("email").value;
+  const senha = document.getElementById("senha").value;
+
+  try {
+    const res = await fetch("/logar", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, senha })
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+      localStorage.setItem("pessoaId", data.id);
+
+      Swal.fire({
+        icon: "success",
+        title: "Login realizado!",
+        timer: 1500,
+        showConfirmButton: false
+      });
+
+      setTimeout(() => {
+        window.location.href = "/";
+      }, 1500);
+    } else {
+      Swal.fire({
+        icon: "error",
+        title: "Erro no login",
+        text: data.message
+      });
+    }
+  } catch (err) {
+    Swal.fire({
+      icon: "error",
+      title: "Erro",
+      text: "Não foi possível conectar ao servidor"
+    });
+  }
+});
+</script>
+</body>
 </html>
+
+
