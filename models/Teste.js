@@ -20,7 +20,5 @@ const Teste = db.sequelize.define(
   }
 );
 
-db.sequelize.sync({ force: true });
-
 
 module.exports = Teste;

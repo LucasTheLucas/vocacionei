@@ -16,7 +16,5 @@ const Instituicao = db.sequelize.define(
   }
 );
 
-db.sequelize.sync({ force: true });
-
 
 module.exports = Instituicao;
