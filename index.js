@@ -11,7 +11,7 @@ const Instituicao = require("./models/Instituicao");
 const Estado = require("./models/Estado");
 const Cidade = require("./models/Cidade");
 const Teste = require("./models/Teste")
-const db = require("./models/Db");
+const db = require("./models/Db.js");
 
 
 const PDFDocument = require("pdfkit");
@@ -408,3 +408,7 @@ db.sync().then(() => {
 }).catch(err => {
   console.error("Erro ao sincronizar DB:", err);
 });
+
+db.sequelize.authenticate()
+  .then(() => console.log("🔥 Conectado ao MySQL Railway!"))
+  .catch(err => console.error("💥 Erro ao conectar:", err));
