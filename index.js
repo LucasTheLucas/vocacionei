@@ -412,7 +412,6 @@ sequelize.authenticate()
   })
   .then(() => {
     app.listen(PORT, () => {
-      app.redirect('/');
       console.log("Servidor rodando na porta " + PORT);
     });
   })
