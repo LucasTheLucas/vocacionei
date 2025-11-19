@@ -401,7 +401,7 @@ app.get("/relatorio/instituicoes", async (req, res) => {
 });
 
 // --- SERVIDOR ---
-db.sync().then(() => {
+db.sequelize.sync().then(() => {
   app.listen(PORT, () => {
     console.log("Servidor rodando! na porta " + PORT);
   });
