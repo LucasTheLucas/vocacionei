@@ -4,7 +4,7 @@ const { Sequelize } = require('sequelize');
 const Imagen = sequelize.define(
   'imagens',
   {
-    basemq: { type: Sequelize.TEXT('medium'), allowNull: false },
+    url: { type: Sequelize.STRING(500), allowNull: false },
     tipo: { type: Sequelize.CHAR(1), allowNull: false }
   },
   {
