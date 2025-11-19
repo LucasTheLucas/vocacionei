@@ -142,31 +142,30 @@ app.get("/slides/:id", async (req, res) => {
       where: { id: req.params.id }
     });
 
-    // Se não existir
+    // Se a imagem não existir
     if (!imagemDb) {
       return res.status(404).send("Imagem não encontrada.");
     }
 
-    // Se o campo vier nulo ou vazio
-    if (!imagemDb.basemq) {
-      return res.status(400).send("Imagem inválida no banco de dados.");
+    // Se não tiver URL
+    if (!imagemDb.url) {
+      return res.status(400).send("Imagem sem URL cadastrada.");
     }
-
-    const base64Limpo = (imagemDb.basemq + "").replace(/\r?\n|\r/g, "");
 
     const imagem = {
       id: imagemDb.id,
-      tipo: imagemDb.tipo || "png",
-      imagem: `data:image/${imagemDb.tipo};base64,${base64Limpo}`,
+      tipo: imagemDb.tipo,
+      url: imagemDb.url
     };
 
     res.render("slides", { imagem });
 
   } catch (err) {
     console.error(err);
-    res.status(500).send("Erro ao carregar imagens.");
+    res.status(500).send("Erro ao carregar imagem.");
   }
 });
+
 
 
 // --- ROTAS - INSTITUIÇÃO ---
