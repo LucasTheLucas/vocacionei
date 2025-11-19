@@ -70,7 +70,11 @@ app.post("/logar", async (req, res) => {
 });
 
 
-app.get("/", (req, res) => res.render("principal"));
+app.get("/", (req, res) => {
+  console.log("aqui!" + req);
+  console.log("aqui2!" + res);
+  res.render("principal")
+});
 app.get("/cadastrar", async (req, res) => {
   const estado = await Estado.findAll({ raw: true });
   const instituicao = await Instituicao.findAll({ raw: true });
