@@ -1,20 +1,20 @@
-const db = require('./Db.js');
+const sequelize = require('./Db.js');
+const { Sequelize } = require('sequelize');
 
-const Instituicao = db.sequelize.define(
+const Instituicao = sequelize.define(
   'instituicao',
   {
-    nome: { type: db.Sequelize.STRING, unique: true },
-    rua: { type: db.Sequelize.STRING },
-    bairro: { type: db.Sequelize.STRING },
-    idcidade: { type: db.Sequelize.INTEGER },
-    idestado: { type: db.Sequelize.INTEGER }, 
-    inativo: { type: db.Sequelize.BOOLEAN, defaultValue: false },
+    nome: { type: Sequelize.STRING, unique: true },
+    rua: { type: Sequelize.STRING },
+    bairro: { type: Sequelize.STRING },
+    idcidade: { type: Sequelize.INTEGER },
+    idestado: { type: Sequelize.INTEGER },
+    inativo: { type: Sequelize.BOOLEAN, defaultValue: false },
   },
   {
     tableName: 'instituicoes',
     timestamps: true,
   }
 );
-
 
 module.exports = Instituicao;

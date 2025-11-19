@@ -1,13 +1,15 @@
-const db = require('./Db.js');
+const sequelize = require('./Db.js');
+const { Sequelize } = require('sequelize');
 
-const Imagen = db.sequelize.define('imagens', {
-    basemq: { type: db.Sequelize.TEXT('medium'), allowNull: false },
-    tipo: { type: db.Sequelize.CHAR(1), allowNull: false }
-},
-{
+const Imagen = sequelize.define(
+  'imagens',
+  {
+    basemq: { type: Sequelize.TEXT('medium'), allowNull: false },
+    tipo: { type: Sequelize.CHAR(1), allowNull: false }
+  },
+  {
     timestamps: false
-});
-
-
+  }
+);
 
 module.exports = Imagen;

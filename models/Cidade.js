@@ -1,8 +1,14 @@
-const db = require('./Db.js');
+const sequelize = require('./Db.js');
+const { Sequelize } = require('sequelize');
 
-const Cidade = db.sequelize.define('cidade', {
-    nome: { type: db.Sequelize.STRING, allowNull: false, unique: true }
-}, {timestamps: false});
-
+const Cidade = sequelize.define(
+  'cidade',
+  {
+    nome: { type: Sequelize.STRING, allowNull: false, unique: true }
+  },
+  {
+    timestamps: false
+  }
+);
 
 module.exports = Cidade;
