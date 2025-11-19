@@ -138,19 +138,36 @@ app.get("/slides", (req, res) => {
 
 app.get("/slides/:id", async (req, res) => {
   try {
-    const imagemDb = await Imagen.findOne({ where: { id: req.params.id } });
-    const base64Limpo = imagemDb.basemq.replace(/\r?\n|\r/g, "");
+    const imagemDb = await Imagen.findOne({
+      where: { id: req.params.id }
+    });
+
+    // Se não existir
+    if (!imagemDb) {
+      return res.status(404).send("Imagem não encontrada.");
+    }
+
+    // Se o campo vier nulo ou vazio
+    if (!imagemDb.basemq) {
+      return res.status(400).send("Imagem inválida no banco de dados.");
+    }
+
+    const base64Limpo = (imagemDb.basemq + "").replace(/\r?\n|\r/g, "");
+
     const imagem = {
       id: imagemDb.id,
-      tipo: imagemDb.tipo,
+      tipo: imagemDb.tipo || "png",
       imagem: `data:image/${imagemDb.tipo};base64,${base64Limpo}`,
     };
+
     res.render("slides", { imagem });
+
   } catch (err) {
     console.error(err);
-    res.send("Erro ao carregar imagens: " + err);
+    res.status(500).send("Erro ao carregar imagens.");
   }
 });
+
 
 // --- ROTAS - INSTITUIÇÃO ---
 app.get("/cadinstituicao/:id", async (req, res) => {
