@@ -11,7 +11,7 @@ const Instituicao = require("./models/Instituicao");
 const Estado = require("./models/Estado");
 const Cidade = require("./models/Cidade");
 const Teste = require("./models/Teste")
-const db = require("./models/Db.js");
+const sequelize = require("./models/Db.js");
 
 
 const PDFDocument = require("pdfkit");
@@ -401,14 +401,18 @@ app.get("/relatorio/instituicoes", async (req, res) => {
 });
 
 // --- SERVIDOR ---
-db.sequelize.sync().then(() => {
-  app.listen(PORT, () => {
-    console.log("Servidor rodando! na porta " + PORT);
+sequelize.authenticate()
+  .then(() => {
+    console.log("🔥 Conectado ao MySQL Railway!");
+    return sequelize.sync();
+  })
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log("Servidor rodando na porta " + PORT);
+    });
+  })
+  .catch(err => {
+    console.error("💥 Erro ao iniciar aplicativo:", err);
   });
-}).catch(err => {
-  console.error("Erro ao sincronizar DB:", err);
-});
 
-db.sequelize.authenticate()
-  .then(() => console.log("🔥 Conectado ao MySQL Railway!"))
-  .catch(err => console.error("💥 Erro ao conectar:", err));
+
