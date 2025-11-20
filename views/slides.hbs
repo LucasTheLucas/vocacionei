@@ -39,6 +39,29 @@
   </div>
 </div>
 
+<!-- ===============================
+     TUTORIAL POP-UP (Modal)
+=================================-->
+<div class="modal fade" id="tutorialModal" tabindex="-1" aria-labelledby="tutorialLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content text-dark">
+      <div class="modal-header">
+        <h5 class="modal-title" id="tutorialLabel">Como funciona?</h5>
+      </div>
+      <div class="modal-body">
+        Você verá imagens representando profissões ou atividades.
+        <br><br>
+        Escolha de <strong>1 a 5</strong> o quanto você se identifica com cada atividade.
+        <br><br>
+        <strong>Responda rápido</strong> e <strong>não pense demais</strong> — siga sua primeira impressão!
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Entendi!</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
 const imagemAtual = {id: {{{json imagem}}}.id, tipo: {{{json imagem}}}.tipo};
 const slide = document.getElementById("imagem");
@@ -51,6 +74,14 @@ const barra = document.getElementById("barra-progresso");
 let pontuacaoDada = false;
 let tempoRestante = 8;
 
+/* ===============================
+     Tutorial somente na 1ª imagem
+=================================*/
+if (imagemAtual.id == 1 && !localStorage.getItem("tutorial")) {
+  const modal = new bootstrap.Modal(document.getElementById("tutorialModal"));
+  modal.show();
+  localStorage.setItem("tutorial", true);
+}
 
 function Pontuar(val)
 {
@@ -89,6 +120,7 @@ function resetarTeste()
 {
   trocandoDePagina = true;
   localStorage.removeItem("valores");
+  localStorage.removeItem("tutorial"); // <-- limpa o tutorial ao reiniciar
 }
 
 function salvarResultadosFinais()
@@ -114,32 +146,26 @@ function salvarResultadosFinais()
     const indexes = 
     [
     {
-      //IMAGEM R
       indiceinicial:13,
       indicefinal:97
     },
     {
-      //IMAGEM I
       indiceinicial:26,
       indicefinal:98
     },
     {
-      //IMAGEM A
       indiceinicial:9,
       indicefinal:99
     },
     {
-      //IMAGEM S
       indiceinicial:22,
       indicefinal:100
     },
     {
-      //IMAGEM E
       indiceinicial:17,
       indicefinal:101
     },
     {
-      //IMAGEM C
       indiceinicial:36,
       indicefinal:102
     },
