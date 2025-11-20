@@ -89,7 +89,7 @@ function iniciarTimer() {
 // Mostrar modal apenas na primeira imagem
 window.addEventListener("load", () => {
   setTimeout(() => { // garante que o modal esteja no DOM
-    if(imagemAtual.id == 1) {
+    if(imagemAtual.id == 01) {
       const modalEl = document.getElementById("tutorialModal");
       const tutorialModal = new bootstrap.Modal(modalEl, {backdrop: 'static', keyboard: false});
       tutorialModal.show();
