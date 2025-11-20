@@ -2,50 +2,43 @@
   <div class="mt-5">
     <div class="container-md">
       <div class="bg-dark" style="width:400px; height: 320px; justify-self: center;">
-          <div class="bg-dark" style="width: 400px; display: flex;">
-            
-            <a href="/slides/1">
-              <button type="button" class="btn btn-secondary bg-dark btn border-0" onclick="resetarTeste()"><i class="bi bi-arrow-clockwise"></i> Refazer</button>
-            </a>
-          </div>
+        <div class="bg-dark" style="width: 400px; display: flex;">
+          <a href="/slides/1">
+            <button type="button" class="btn btn-secondary bg-dark btn border-0" onclick="resetarTeste()">
+              <i class="bi bi-arrow-clockwise"></i> Refazer
+            </button>
+          </a>
+        </div>
 
-        <!-- ADICIONADO data-id -->
-        <img id="imagem" data-id="{{{json imagem}}}.id" src="{{imagem.url}}" 
-        style="width: 400px; object-fit:cover;" onerror="this.style.display='none';">
+        <!-- imagem com data-id -->
+        <img id="imagem" data-id="{{imagem.id}}" src="{{imagem.url}}" 
+             style="width: 400px; object-fit:cover;" onerror="this.style.display='none';">
       </div>
 
       <div class="d-flex justify-content-center">
-          <div style="width: 400px;">
-              <div class="progress mt-3">
-                  <div id="barra-progresso" 
-                      class="progress-bar" 
-                      role="progressbar" 
-                      aria-valuenow="0" 
-                      aria-valuemin="0" 
-                      aria-valuemax="8" 
-                      style="width: 100%;">
-                  </div>
-              </div>
+        <div style="width: 400px;">
+          <div class="progress mt-3">
+            <div id="barra-progresso" class="progress-bar" role="progressbar" 
+                 aria-valuenow="0" aria-valuemin="0" aria-valuemax="8" style="width: 100%;">
+            </div>
           </div>
+        </div>
       </div>
     </div>
 
-      <div class="py-5">
-          <div id="botoes" class="btn-group" style="display: flex; justify-self: center; justify-content: space-between; width: 400px;">
-              <button class="btn btn-primary" data-value="1" onclick="Pontuar(1)">1</button>
-              <button class="btn btn-primary" data-value="2" onclick="Pontuar(2)">2</button>
-              <button class="btn btn-primary" data-value="3" onclick="Pontuar(3)">3</button>
-              <button class="btn btn-primary" data-value="4" onclick="Pontuar(4)">4</button>
-              <button class="btn btn-primary" data-value="5" onclick="Pontuar(5)">5</button>
-          </div>
+    <div class="py-5">
+      <div id="botoes" class="btn-group" style="display: flex; justify-self: center; justify-content: space-between; width: 400px;">
+        <button class="btn btn-primary" data-value="1" onclick="Pontuar(1)">1</button>
+        <button class="btn btn-primary" data-value="2" onclick="Pontuar(2)">2</button>
+        <button class="btn btn-primary" data-value="3" onclick="Pontuar(3)">3</button>
+        <button class="btn btn-primary" data-value="4" onclick="Pontuar(4)">4</button>
+        <button class="btn btn-primary" data-value="5" onclick="Pontuar(5)">5</button>
       </div>
-
+    </div>
   </div>
 </div>
 
-<!-- ===============================
-     TUTORIAL POP-UP (Modal)
-=================================-->
+<!-- Modal tutorial -->
 <div class="modal fade" id="tutorialModal" tabindex="-1" aria-labelledby="tutorialLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content text-dark">
@@ -60,31 +53,28 @@
         <strong>Responda rápido</strong> e <strong>não pense demais</strong> — siga sua primeira impressão!
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Entendi!</button>
+        <button type="button" class="btn btn-primary" id="btnEntendi" data-bs-dismiss="modal">Entendi!</button>
       </div>
     </div>
   </div>
 </div>
 
-<script>
-const imagemAtual = {id: {{{json imagem}}}.id, tipo: {{{json imagem}}}.tipo};
-const slide = document.getElementById("imagem");
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
+<script>
+const imagemAtual = {id: {{imagem.id}}, tipo: "{{imagem.tipo}}"};
 let trocandoDePagina = false;
 let pontuacaoDada = false;
 let tempoRestante = 8;
 let timer = null;
-
 const barra = document.getElementById("barra-progresso");
 
-
-/* ===============================
-     INICIAR TIMER (apenas função)
-=================================*/
+// Função para iniciar timer
 function iniciarTimer() {
   timer = setInterval(() => {
     if(!trocandoDePagina) {
-      if (tempoRestante > 0) {
+      if(tempoRestante > 0) {
         tempoRestante--;
         barra.style.width = (tempoRestante / 8 * 100) + "%";
         barra.setAttribute("aria-valuenow", tempoRestante);
@@ -96,18 +86,14 @@ function iniciarTimer() {
   }, 1000);
 }
 
-
-/* ===============================
-     Tutorial somente na 1ª imagem
-     (timer só inicia quando fechar)
-=================================*/
+// Mostrar modal apenas na primeira imagem
 document.addEventListener("DOMContentLoaded", () => {
-  if (imagemAtual.id == 1 && !localStorage.getItem("tutorial")) {
-    const modal = new bootstrap.Modal(document.getElementById("tutorialModal"));
+  if(imagemAtual.id === 1 && !localStorage.getItem("tutorial")) {
+    const modalEl = document.getElementById("tutorialModal");
+    const modal = new bootstrap.Modal(modalEl);
     modal.show();
 
-    // Timer só inicia DEPOIS de fechar
-    document.getElementById("tutorialModal").addEventListener("hidden.bs.modal", () => {
+    document.getElementById("btnEntendi").addEventListener("click", () => {
       iniciarTimer();
     });
 
@@ -117,51 +103,44 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-
-/* ===============================
-     FUNÇÕES DO TESTE
-=================================*/
-function Pontuar(val)
-{
-    if(pontuacaoDada) return
-    pontuacaoDada = true;
-    salvarLocalStorage(val);
+// Funções do teste
+function Pontuar(val) {
+  if(pontuacaoDada) return;
+  pontuacaoDada = true;
+  salvarLocalStorage(val);
 }
 
-function salvarLocalStorage(val)
-{
-    let valores = JSON.parse(localStorage.getItem("valores")) || [];
-    valores.push({id:imagemAtual.id, tipo:imagemAtual.tipo, valor: val});
-    localStorage.setItem("valores", JSON.stringify(valores));
-    
-    const pathParts = window.location.pathname.split('/');
-    const id = parseInt(pathParts[pathParts.length - 1]) + 1;
+function salvarLocalStorage(val) {
+  let valores = JSON.parse(localStorage.getItem("valores")) || [];
+  valores.push({id:imagemAtual.id, tipo:imagemAtual.tipo, valor: val});
+  localStorage.setItem("valores", JSON.stringify(valores));
 
-    if(id > 102) {
-      salvarResultadosFinais()
-      window.location.href = `/resultados`
-    } else {
-      window.location.href = `/slides/${id}`
-    }    
+  const pathParts = window.location.pathname.split('/');
+  const id = parseInt(pathParts[pathParts.length - 1]) + 1;
+
+  if(id > 102) {
+    salvarResultadosFinais();
+    window.location.href = `/resultados`;
+  } else {
+    window.location.href = `/slides/${id}`;
+  }
 }
 
-function resetarTeste()
-{
+function resetarTeste() {
   trocandoDePagina = true;
   localStorage.removeItem("valores");
   localStorage.removeItem("tutorial"); 
 }
 
-/* ===============================
-     FINALIZAÇÃO (mantida igual)
-=================================*/
-function salvarResultadosFinais()
-{
+// Função de finalização
+function salvarResultadosFinais() {
   const pessoaId = JSON.parse(localStorage.getItem("pessoaId"));
   const dadosBrutos = JSON.parse(localStorage.getItem("valores"));
-  if(dadosBrutos == null) return;
+  if(!dadosBrutos) return;
+
   const dados = dadosBrutos.slice(6, dadosBrutos.length - 6);
-  let R=0,I=0,A=0,S=0,E=0,C=0, indiceDeCerteza=0;
+  let R=0,I=0,A=0,S=0,E=0,C=0,indiceDeCerteza=0;
+
   const indexes = [
     {indiceinicial:13,indicefinal:97},
     {indiceinicial:26,indicefinal:98},
@@ -170,13 +149,28 @@ function salvarResultadosFinais()
     {indiceinicial:17,indicefinal:101},
     {indiceinicial:36,indicefinal:102},
   ];
-  for (const index of indexes)
-    indiceDeCerteza += Math.abs(Number(dadosBrutos[index.indiceinicial - 1].valor) - Number(dadosBrutos[index.indicefinal - 1].valor));
-  for (const dado of dados){
-    valor = Number(dado.valor)
-    switch (dado.tipo){case "R":R+=valor;break;case "I":I+=valor;break;case "A":A+=valor;break;case "S":S+=valor;break;case "E":E+=valor;break;case "C":C+=valor;break;}
+
+  for(const index of indexes)
+    indiceDeCerteza += Math.abs(Number(dadosBrutos[index.indiceinicial-1].valor) - Number(dadosBrutos[index.indicefinal-1].valor));
+
+  for(const dado of dados){
+    const valor = Number(dado.valor);
+    switch(dado.tipo){
+      case "R": R+=valor; break;
+      case "I": I+=valor; break;
+      case "A": A+=valor; break;
+      case "S": S+=valor; break;
+      case "E": E+=valor; break;
+      case "C": C+=valor; break;
+    }
   }
-  localStorage.setItem("credibilidade", JSON.stringify(indiceDeCerteza))
-  fetch("/updatealuno",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({id:pessoaId,resr:R,resi:I,resa:A,ress:S,rese:E,resc:C,totalb:indiceDeCerteza,totalv:0})})
+
+  localStorage.setItem("credibilidade", JSON.stringify(indiceDeCerteza));
+
+  fetch("/updatealuno", {
+    method:"POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({id:pessoaId,resr:R,resi:I,resa:A,ress:S,rese:E,resc:C,totalb:indiceDeCerteza,totalv:0})
+  });
 }
 </script>
