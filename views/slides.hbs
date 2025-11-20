@@ -93,6 +93,7 @@ window.addEventListener("load", () => {
     const modalEl = document.getElementById("tutorialModal");
     const tutorialModal = new bootstrap.Modal(modalEl, {backdrop: 'static', keyboard: false});
     tutorialModal.show();
+    localStorage.setItem('dataInicio', Date.now());
 
     document.getElementById("btnEntendi").addEventListener("click", () => {
       tutorialModal.hide();   // fecha modal
@@ -184,7 +185,9 @@ function salvarResultadosFinais() {
       rese:E,
       resc:C,
       totalb:indiceDeCerteza,
-      totalv:0
+      totalv:0,
+      dataInicio: localStorage.getItem('dataInicio'),
+      dataFim: new Date().toISOString()
     })
   });
 }

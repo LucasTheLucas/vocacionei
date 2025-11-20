@@ -5,7 +5,8 @@ const Teste = sequelize.define(
   'teste',
   {
     idpessoa: { type: Sequelize.INTEGER },
-    datahora: { type: Sequelize.DATE },
+    dataInicio: { type: Sequelize.DATE, allowNull: false },
+    dataFim: { type: Sequelize.DATE, allowNull: false },
     resr: { type: Sequelize.FLOAT },
     resi: { type: Sequelize.FLOAT },
     resa: { type: Sequelize.FLOAT },

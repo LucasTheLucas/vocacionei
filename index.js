@@ -282,12 +282,11 @@ app.post("/addaluno", (req, res) => {
 });
 
 app.post("/updatealuno", async (req, res) => {
-  const { id, resr, resi, resa, ress, rese, resc, totalb, totalv } = req.body;
-  const datahora = new Date();
+  const { id, dataInicio, dataFim, resr, resi, resa, ress, rese, resc, totalb, totalv } = req.body;
   const idpessoa = id;
   try {
     await Teste.create(
-      { idpessoa, datahora, resr, resi, resa, ress, rese, resc, totalb, totalv }
+      { idpessoa, dataInicio, dataFim, resr, resi, resa, ress, rese, resc, totalb, totalv }
     );
 
     const pessoa = await Pessoa.findOne({ where: { id } });
