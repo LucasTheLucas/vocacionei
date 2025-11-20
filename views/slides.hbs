@@ -8,8 +8,12 @@
               <button type="button" class="btn btn-secondary bg-dark btn border-0" onclick="resetarTeste()"><i class="bi bi-arrow-clockwise"></i> Refazer</button>
             </a>
           </div>
-        <img id="imagem" src="{{imagem.url}}" style="width: 400px; object-fit:cover;" onerror="this.style.display='none';">
+
+        <!-- ADICIONADO data-id -->
+        <img id="imagem" data-id="{{{json imagem}}}.id" src="{{imagem.url}}" 
+        style="width: 400px; object-fit:cover;" onerror="this.style.display='none';">
       </div>
+
       <div class="d-flex justify-content-center">
           <div style="width: 400px;">
               <div class="progress mt-3">
@@ -67,24 +71,56 @@ const imagemAtual = {id: {{{json imagem}}}.id, tipo: {{{json imagem}}}.tipo};
 const slide = document.getElementById("imagem");
 
 let trocandoDePagina = false;
-
-const botoes = document.querySelectorAll("#botoes button");
-const barra = document.getElementById("barra-progresso");
-
 let pontuacaoDada = false;
 let tempoRestante = 8;
+let timer = null;
+
+const barra = document.getElementById("barra-progresso");
+
+
+/* ===============================
+     INICIAR TIMER (apenas função)
+=================================*/
+function iniciarTimer() {
+  timer = setInterval(() => {
+    if(!trocandoDePagina) {
+      if (tempoRestante > 0) {
+        tempoRestante--;
+        barra.style.width = (tempoRestante / 8 * 100) + "%";
+        barra.setAttribute("aria-valuenow", tempoRestante);
+      } else {
+        barra.style.width = "100%";
+        Pontuar(0);
+      }
+    }
+  }, 1000);
+}
+
 
 /* ===============================
      Tutorial somente na 1ª imagem
+     (timer só inicia quando fechar)
 =================================*/
 document.addEventListener("DOMContentLoaded", () => {
   if (imagemAtual.id == 1 && !localStorage.getItem("tutorial")) {
     const modal = new bootstrap.Modal(document.getElementById("tutorialModal"));
     modal.show();
+
+    // Timer só inicia DEPOIS de fechar
+    document.getElementById("tutorialModal").addEventListener("hidden.bs.modal", () => {
+      iniciarTimer();
+    });
+
     localStorage.setItem("tutorial", true);
+  } else {
+    iniciarTimer();
   }
 });
 
+
+/* ===============================
+     FUNÇÕES DO TESTE
+=================================*/
 function Pontuar(val)
 {
     if(pontuacaoDada) return
@@ -95,25 +131,16 @@ function Pontuar(val)
 function salvarLocalStorage(val)
 {
     let valores = JSON.parse(localStorage.getItem("valores")) || [];
-    valores.push(
-      {
-        id:imagemAtual.id,
-        tipo:imagemAtual.tipo,
-        valor: val
-      });
+    valores.push({id:imagemAtual.id, tipo:imagemAtual.tipo, valor: val});
     localStorage.setItem("valores", JSON.stringify(valores));
-    console.log(localStorage)
     
     const pathParts = window.location.pathname.split('/');
     const id = parseInt(pathParts[pathParts.length - 1]) + 1;
 
-    if(id > 102)
-    {
+    if(id > 102) {
       salvarResultadosFinais()
       window.location.href = `/resultados`
-    }
-    else
-    {
+    } else {
       window.location.href = `/slides/${id}`
     }    
 }
@@ -122,109 +149,34 @@ function resetarTeste()
 {
   trocandoDePagina = true;
   localStorage.removeItem("valores");
-  localStorage.removeItem("tutorial"); // <-- limpa o tutorial ao reiniciar
+  localStorage.removeItem("tutorial"); 
 }
 
+/* ===============================
+     FINALIZAÇÃO (mantida igual)
+=================================*/
 function salvarResultadosFinais()
 {
   const pessoaId = JSON.parse(localStorage.getItem("pessoaId"));
   const dadosBrutos = JSON.parse(localStorage.getItem("valores"));
-
-    if(dadosBrutos == null)
-    {
-      //window.location.href = `http://localhost:8081/`
-    }
-
-    const dados = dadosBrutos.slice(6, dadosBrutos.length - 6);
-
-    let R = 0;
-    let I = 0;
-    let A = 0;
-    let S = 0;
-    let E = 0;
-    let C = 0;
-
-    let indiceDeCerteza = 0
-    const indexes = 
-    [
-    {
-      indiceinicial:13,
-      indicefinal:97
-    },
-    {
-      indiceinicial:26,
-      indicefinal:98
-    },
-    {
-      indiceinicial:9,
-      indicefinal:99
-    },
-    {
-      indiceinicial:22,
-      indicefinal:100
-    },
-    {
-      indiceinicial:17,
-      indicefinal:101
-    },
-    {
-      indiceinicial:36,
-      indicefinal:102
-    },
-    ]
-
-    for (const index of indexes)
-    {
-      indiceDeCerteza += Math.abs(Number(dadosBrutos[index.indiceinicial - 1].valor) - Number(dadosBrutos[index.indicefinal - 1].valor))
-    }
-
-    for (const dado of dados)
-    {
-        valor = Number(dado.valor)
-        switch (dado.tipo)
-        {
-          case "R":
-            R = R + valor
-            break; 
-          case "I":
-            I = I + valor
-            break; 
-          case "A":
-            A = A + valor
-            break; 
-          case "S":
-            S = S + valor
-            break; 
-          case "E":
-            E = E + valor
-            break; 
-          case "C":
-            C = C + valor
-            break; 
-        }
-    }
-
-    localStorage.setItem("credibilidade", JSON.stringify(indiceDeCerteza))
-
-    fetch("/updatealuno",
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body:JSON.stringify({id: pessoaId, resr: R, resi: I, resa: A, ress: S, rese: E, resc: C, totalb: indiceDeCerteza, totalv: 0})
-    })
+  if(dadosBrutos == null) return;
+  const dados = dadosBrutos.slice(6, dadosBrutos.length - 6);
+  let R=0,I=0,A=0,S=0,E=0,C=0, indiceDeCerteza=0;
+  const indexes = [
+    {indiceinicial:13,indicefinal:97},
+    {indiceinicial:26,indicefinal:98},
+    {indiceinicial:9, indicefinal:99},
+    {indiceinicial:22,indicefinal:100},
+    {indiceinicial:17,indicefinal:101},
+    {indiceinicial:36,indicefinal:102},
+  ];
+  for (const index of indexes)
+    indiceDeCerteza += Math.abs(Number(dadosBrutos[index.indiceinicial - 1].valor) - Number(dadosBrutos[index.indicefinal - 1].valor));
+  for (const dado of dados){
+    valor = Number(dado.valor)
+    switch (dado.tipo){case "R":R+=valor;break;case "I":I+=valor;break;case "A":A+=valor;break;case "S":S+=valor;break;case "E":E+=valor;break;case "C":C+=valor;break;}
+  }
+  localStorage.setItem("credibilidade", JSON.stringify(indiceDeCerteza))
+  fetch("/updatealuno",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({id:pessoaId,resr:R,resi:I,resa:A,ress:S,rese:E,resc:C,totalb:indiceDeCerteza,totalv:0})})
 }
-
-setInterval(() => {
-    if(!trocandoDePagina)
-    {
-      if (tempoRestante > 0) {
-        tempoRestante--;
-        barra.style.width = (tempoRestante / 8 * 100) + "%";
-        barra.setAttribute("aria-valuenow", tempoRestante);
-      } else {
-          barra.style.width = "100%";
-          Pontuar(0);
-      }
-    }
-}, 1000);
 </script>
