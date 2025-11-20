@@ -7,6 +7,12 @@
   </div>
 </div>
 
+<!-- Resultados com credibilidade e tempo -->
+<div class="container my-3 text-center">
+  <p><strong>Credibilidade:</strong> <span id="credibilidade"></span></p>
+  <p><strong>Tempo realizado:</strong> <span id="tempoTeste"></span> minutos</p>
+</div>
+
 <!-- Resultados com barras de progresso -->
 <div class="container my-5">
   <h3 class="text-center mb-4">Detalhes do seu teste</h3>
@@ -15,19 +21,28 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-  const credibilidade = JSON.parse(localStorage.getItem("credibilidade"))
+  const credibilidade = JSON.parse(localStorage.getItem("credibilidade"));
   const dadosBrutos = JSON.parse(localStorage.getItem("valores"));
 
-  if(dadosBrutos == null) {
-    window.location.href = `/`
+  const dataInicioMs = Number(localStorage.getItem('dataInicio'));
+  const dataFimMs = Number(localStorage.getItem('dataFim'));
+  const tempoEmMinutos = ((dataFimMs - dataInicioMs) / 1000 / 60).toFixed(2);
+
+  // Redireciona se não houver dados
+  if (!dadosBrutos) {
+    window.location.href = `/`;
   }
+
+  // Exibe credibilidade e tempo
+  document.getElementById("credibilidade").textContent = credibilidade;
+  document.getElementById("tempoTeste").textContent = tempoEmMinutos;
 
   const dados = dadosBrutos.slice(6, dadosBrutos.length - 6);
 
   let R = 0, I = 0, A = 0, S = 0, E = 0, C = 0;
 
   for (const dado of dados) {
-    const valor = Number(dado.valor)
+    const valor = Number(dado.valor);
     switch (dado.tipo) {
       case "R": R += valor; break;
       case "I": I += valor; break;
@@ -74,7 +89,7 @@
     container.appendChild(div);
   });
 
-  // Cria o gráfico com cores iguais ao primeiro exemplo
+  // Cria o gráfico
   const ctx = document.getElementById("meuGrafico").getContext("2d");
   new Chart(ctx, {
     type: "bar",

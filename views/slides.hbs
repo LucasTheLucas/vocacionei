@@ -144,6 +144,8 @@ function salvarResultadosFinais() {
   const dadosBrutos = JSON.parse(localStorage.getItem("valores"));
 
   const dataHoraInicio = new Date(Number(localStorage.getItem('dataInicio'))).toISOString();
+  localStorage.setItem('dataFim', Date.now());
+
   const dataHoraFim = new Date().toISOString();
 
   if(!dadosBrutos) return;
