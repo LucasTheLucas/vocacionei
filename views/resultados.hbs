@@ -19,7 +19,7 @@
   const dadosBrutos = JSON.parse(localStorage.getItem("valores"));
 
   if(dadosBrutos == null) {
-    window.location.href = `http://localhost:8081/`
+    window.location.href = `/`
   }
 
   const dados = dadosBrutos.slice(6, dadosBrutos.length - 6);

@@ -82,6 +82,7 @@ app.get("/cadastrar", async (req, res) => {
   res.render("formulario", { estado, instituicao, cidade });
 });
 app.get("/termos", (req, res) => res.render("termos"));
+app.get("/obrigado", (req, res) => res.render("obrigado"))
 app.get("/resultados", (req, res) => res.render("resultados"));
 app.get("/resultados/:id", async (req, res) => {
   const { id } = req.params;
