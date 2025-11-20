@@ -1,191 +1,213 @@
-<div class="container text-center">        
-  <div class="mt-5">
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>VOCACIONEI</title>
+  <link rel="icon" type="image/png" href="/assets/favicon-16x16.png" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"/>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg" style="background-color: #1e3a5f;">
+    <div class="container-fluid">
+      <a href="/" class="navbar-brand text-white">VOCACIONEI</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item" id="authArea">
+            <a id="login" href="/login" class="btn btn-light btn-sm me-2">Login</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Conteúdo principal -->
+  <div class="container text-center mt-5">
     <div class="container-md">
-      <div class="bg-dark" style="width:400px; height: 320px; justify-self: center;">
-        <div class="bg-dark" style="width: 400px; display: flex;">
+      <div class="bg-dark" style="width:400px; height:320px; margin:auto;">
+        <div class="d-flex justify-content-start p-2">
           <a href="/slides/1">
-            <button type="button" class="btn btn-secondary bg-dark btn border-0" onclick="resetarTeste()">
+            <button type="button" class="btn btn-secondary btn-sm border-0" onclick="resetarTeste()">
               <i class="bi bi-arrow-clockwise"></i> Refazer
             </button>
           </a>
         </div>
-
-        <!-- imagem com data-id -->
-        <img id="imagem" data-id="{{imagem.id}}" src="{{imagem.url}}" 
-             style="width: 400px; object-fit:cover;" onerror="this.style.display='none';">
+        <!-- imagem -->
+        <img id="imagem" data-id="{{imagem.id}}" src="{{imagem.url}}" style="width:100%; height:240px; object-fit:cover;" onerror="this.style.display='none';">
       </div>
 
-      <div class="d-flex justify-content-center">
+      <!-- barra de progresso -->
+      <div class="d-flex justify-content-center mt-3">
         <div style="width: 400px;">
-          <div class="progress mt-3">
-            <div id="barra-progresso" class="progress-bar" role="progressbar" 
-                 aria-valuenow="0" aria-valuemin="0" aria-valuemax="8" style="width: 100%;">
-            </div>
+          <div class="progress">
+            <div id="barra-progresso" class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="8" style="width:100%"></div>
           </div>
         </div>
       </div>
-    </div>
 
-    <div class="py-5">
-      <div id="botoes" class="btn-group" style="display: flex; justify-self: center; justify-content: space-between; width: 400px;">
-        <button class="btn btn-primary" data-value="1" onclick="Pontuar(1)">1</button>
-        <button class="btn btn-primary" data-value="2" onclick="Pontuar(2)">2</button>
-        <button class="btn btn-primary" data-value="3" onclick="Pontuar(3)">3</button>
-        <button class="btn btn-primary" data-value="4" onclick="Pontuar(4)">4</button>
-        <button class="btn btn-primary" data-value="5" onclick="Pontuar(5)">5</button>
+      <!-- botões -->
+      <div class="py-5 d-flex justify-content-center">
+        <div id="botoes" class="btn-group" style="width:400px; justify-content:space-between;">
+          <button class="btn btn-primary" onclick="Pontuar(1)">1</button>
+          <button class="btn btn-primary" onclick="Pontuar(2)">2</button>
+          <button class="btn btn-primary" onclick="Pontuar(3)">3</button>
+          <button class="btn btn-primary" onclick="Pontuar(4)">4</button>
+          <button class="btn btn-primary" onclick="Pontuar(5)">5</button>
+        </div>
       </div>
     </div>
   </div>
-</div>
 
-<!-- Modal tutorial -->
-<div class="modal fade" id="tutorialModal" tabindex="-1" aria-labelledby="tutorialLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content text-dark">
-      <div class="modal-header">
-        <h5 class="modal-title" id="tutorialLabel">Como funciona?</h5>
-      </div>
-      <div class="modal-body">
-        Você verá imagens representando profissões ou atividades.
-        <br><br>
-        Escolha de <strong>1 a 5</strong> o quanto você se identifica com cada atividade.
-        <br><br>
-        <strong>Responda rápido</strong> e <strong>não pense demais</strong> — siga sua primeira impressão!
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary" id="btnEntendi">Entendi!</button>
+  <!-- Modal tutorial -->
+  <div class="modal fade" id="tutorialModal" tabindex="-1" aria-labelledby="tutorialLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content text-dark">
+        <div class="modal-header">
+          <h5 class="modal-title" id="tutorialLabel">Como funciona?</h5>
+        </div>
+        <div class="modal-body">
+          Você verá imagens representando profissões ou atividades.<br><br>
+          Escolha de <strong>1 a 5</strong> o quanto você se identifica com cada atividade.<br><br>
+          <strong>Responda rápido</strong> e <strong>não pense demais</strong> — siga sua primeira impressão!
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" id="btnEntendi">Entendi!</button>
+        </div>
       </div>
     </div>
   </div>
-</div>
 
-<!-- Scripts -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-<script>
-const imagemAtual = {{{json imagem}}}; // imagem.id e imagem.tipo já definidos
-let trocandoDePagina = false;
-let pontuacaoDada = false;
-let tempoRestante = 8;
-let timer = null;
-const barra = document.getElementById("barra-progresso");
+  <script>
+    // Objeto imagemAtual
+    const imagemAtual = {{{json imagem}}};
 
-// Função para iniciar timer
-function iniciarTimer() {
-  timer = setInterval(() => {
-    if(!trocandoDePagina) {
-      if(tempoRestante > 0) {
-        tempoRestante--;
-        barra.style.width = (tempoRestante / 8 * 100) + "%";
-        barra.setAttribute("aria-valuenow", tempoRestante);
-      } else {
-        barra.style.width = "100%";
-        Pontuar(0);
-      }
+    let trocandoDePagina = false;
+    let pontuacaoDada = false;
+    let tempoRestante = 8;
+    let timer = null;
+    const barra = document.getElementById("barra-progresso");
+
+    // Timer da barra
+    function iniciarTimer() {
+      timer = setInterval(() => {
+        if (!trocandoDePagina) {
+          if (tempoRestante > 0) {
+            tempoRestante--;
+            barra.style.width = (tempoRestante / 8 * 100) + "%";
+            barra.setAttribute("aria-valuenow", tempoRestante);
+          } else {
+            barra.style.width = "100%";
+            Pontuar(0);
+          }
+        }
+      }, 1000);
     }
-  }, 1000);
-}
 
-// Mostrar modal apenas na primeira imagem
-window.addEventListener("load", () => {
-  // Se for a primeira imagem e tutorial não mostrado
-  if(imagemAtual.id == 1) {
-    const modalEl = document.getElementById("tutorialModal");
-    const tutorialModal = new bootstrap.Modal(modalEl, {backdrop: 'static', keyboard: false});
-    tutorialModal.show();
+    // Modal tutorial
+    window.addEventListener("load", () => {
+      if(imagemAtual.id == 1 && !localStorage.getItem("tutorial")) {
+        const modalEl = document.getElementById("tutorialModal");
+        const tutorialModal = new bootstrap.Modal(modalEl, {backdrop:'static', keyboard:false});
+        tutorialModal.show();
 
-    document.getElementById("btnEntendi").addEventListener("click", () => {
-      tutorialModal.hide();   // fecha modal
-      iniciarTimer();         // inicia timer
+        document.getElementById("btnEntendi").addEventListener("click", () => {
+          tutorialModal.hide();
+          iniciarTimer();
+        });
+
+        localStorage.setItem("tutorial", true);
+        return;
+      }
+      iniciarTimer();
     });
 
-    localStorage.setItem("tutorial", true);
-    return; // <<< sair do load para não rodar iniciarTimer() abaixo
-  }
-
-  // Se não for primeira imagem ou tutorial já mostrado
-  iniciarTimer();
-});
-
-
-// Funções do teste
-function Pontuar(val) {
-  if(pontuacaoDada) return;
-  pontuacaoDada = true;
-  salvarLocalStorage(val);
-}
-
-function salvarLocalStorage(val) {
-  let valores = JSON.parse(localStorage.getItem("valores")) || [];
-  valores.push({id:imagemAtual.id, tipo:imagemAtual.tipo, valor: val});
-  localStorage.setItem("valores", JSON.stringify(valores));
-
-  const pathParts = window.location.pathname.split('/');
-  const id = parseInt(pathParts[pathParts.length - 1]) + 1;
-
-  if(id > 102) {
-    salvarResultadosFinais();
-    window.location.href = `/resultados`;
-  } else {
-    window.location.href = `/slides/${id}`;
-  }
-}
-
-function resetarTeste() {
-  trocandoDePagina = true;
-  localStorage.removeItem("valores");
-  localStorage.removeItem("tutorial"); 
-}
-
-// Função de finalização
-function salvarResultadosFinais() {
-  const pessoaId = JSON.parse(localStorage.getItem("pessoaId"));
-  const dadosBrutos = JSON.parse(localStorage.getItem("valores"));
-  if(!dadosBrutos) return;
-
-  const dados = dadosBrutos.slice(6, dadosBrutos.length - 6);
-  let R=0,I=0,A=0,S=0,E=0,C=0,indiceDeCerteza=0;
-
-  const indexes = [
-    {indiceinicial:13,indicefinal:97},
-    {indiceinicial:26,indicefinal:98},
-    {indiceinicial:9, indicefinal:99},
-    {indiceinicial:22,indicefinal:100},
-    {indiceinicial:17,indicefinal:101},
-    {indiceinicial:36,indicefinal:102},
-  ];
-
-  for(const index of indexes)
-    indiceDeCerteza += Math.abs(Number(dadosBrutos[index.indiceinicial-1].valor) - Number(dadosBrutos[index.indicefinal-1].valor));
-
-  for(const dado of dados){
-    const valor = Number(dado.valor);
-    switch(dado.tipo){
-      case "R": R+=valor; break;
-      case "I": I+=valor; break;
-      case "A": A+=valor; break;
-      case "S": S+=valor; break;
-      case "E": E+=valor; break;
-      case "C": C+=valor; break;
+    // Funções de pontuação
+    function Pontuar(val) {
+      if (pontuacaoDada) return;
+      pontuacaoDada = true;
+      salvarLocalStorage(val);
     }
-  }
 
-  localStorage.setItem("credibilidade", JSON.stringify(indiceDeCerteza));
+    function salvarLocalStorage(val) {
+      let valores = JSON.parse(localStorage.getItem("valores")) || [];
+      valores.push({id: imagemAtual.id, tipo: imagemAtual.tipo, valor: val});
+      localStorage.setItem("valores", JSON.stringify(valores));
 
-  fetch("/updatealuno", {
-    method:"POST",
-    headers: {"Content-Type":"application/json"},
-    body: JSON.stringify({
-      id:pessoaId,
-      resr:R,
-      resi:I,
-      resa:A,
-      ress:S,
-      rese:E,
-      resc:C,
-      totalb:indiceDeCerteza,
-      totalv:0
-    })
-  });
-}
-</script>
+      const pathParts = window.location.pathname.split('/');
+      const id = parseInt(pathParts[pathParts.length-1]) + 1;
+
+      if(id > 102) {
+        salvarResultadosFinais();
+        window.location.href = "/resultados";
+      } else {
+        window.location.href = `/slides/${id}`;
+      }
+    }
+
+    function resetarTeste() {
+      trocandoDePagina = true;
+      localStorage.removeItem("valores");
+      localStorage.removeItem("tutorial");
+    }
+
+    function salvarResultadosFinais() {
+      const pessoaId = JSON.parse(localStorage.getItem("pessoaId"));
+      const dadosBrutos = JSON.parse(localStorage.getItem("valores"));
+      if(!dadosBrutos) return;
+
+      const dados = dadosBrutos.slice(6, dadosBrutos.length - 6);
+      let R=0,I=0,A=0,S=0,E=0,C=0,indiceDeCerteza=0;
+
+      const indexes = [
+        {indiceinicial:13,indicefinal:97},
+        {indiceinicial:26,indicefinal:98},
+        {indiceinicial:9, indicefinal:99},
+        {indiceinicial:22,indicefinal:100},
+        {indiceinicial:17,indicefinal:101},
+        {indiceinicial:36,indicefinal:102},
+      ];
+
+      for(const index of indexes)
+        indiceDeCerteza += Math.abs(Number(dadosBrutos[index.indiceinicial-1].valor) - Number(dadosBrutos[index.indicefinal-1].valor));
+
+      for(const dado of dados){
+        const valor = Number(dado.valor);
+        switch(dado.tipo){
+          case "R": R+=valor; break;
+          case "I": I+=valor; break;
+          case "A": A+=valor; break;
+          case "S": S+=valor; break;
+          case "E": E+=valor; break;
+          case "C": C+=valor; break;
+        }
+      }
+
+      localStorage.setItem("credibilidade", JSON.stringify(indiceDeCerteza));
+
+      fetch("/updatealuno", {
+        method:"POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({
+          id: pessoaId,
+          resr: R,
+          resi: I,
+          resa: A,
+          ress: S,
+          rese: E,
+          resc: C,
+          totalb: indiceDeCerteza,
+          totalv: 0
+        })
+      });
+    }
+  </script>
+</body>
+</html>
