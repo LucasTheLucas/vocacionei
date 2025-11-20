@@ -77,11 +77,13 @@ let tempoRestante = 8;
 /* ===============================
      Tutorial somente na 1ª imagem
 =================================*/
-if (imagemAtual.id == 1 && !localStorage.getItem("tutorial")) {
-  const modal = new bootstrap.Modal(document.getElementById("tutorialModal"));
-  modal.show();
-  localStorage.setItem("tutorial", true);
-}
+document.addEventListener("DOMContentLoaded", () => {
+  if (imagemAtual.id == 1 && !localStorage.getItem("tutorial")) {
+    const modal = new bootstrap.Modal(document.getElementById("tutorialModal"));
+    modal.show();
+    localStorage.setItem("tutorial", true);
+  }
+});
 
 function Pontuar(val)
 {
