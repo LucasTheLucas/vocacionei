@@ -142,6 +142,10 @@ function resetarTeste() {
 function salvarResultadosFinais() {
   const pessoaId = JSON.parse(localStorage.getItem("pessoaId"));
   const dadosBrutos = JSON.parse(localStorage.getItem("valores"));
+
+  const dataHoraInicio = new Date(Number(localStorage.getItem('dataInicio'))).toISOString();
+  const dataHoraFim = new Date().toISOString();
+
   if(!dadosBrutos) return;
 
   const dados = dadosBrutos.slice(6, dadosBrutos.length - 6);
@@ -186,8 +190,8 @@ function salvarResultadosFinais() {
       resc:C,
       totalb:indiceDeCerteza,
       totalv:0,
-      dataInicio: localStorage.getItem('dataInicio'),
-      dataFim: new Date().toISOString()
+      dataInicio: dataHoraInicio,
+      dataFim: dataHoraFim
     })
   });
 }
