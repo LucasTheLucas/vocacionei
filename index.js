@@ -232,7 +232,7 @@ app.get("/links", async (req, res) =>
 app.get("/listarinstituicao", async (req, res) => {
   try {
     const instituicoes = await Instituicao.findAll({
-      where: { inativo: false },
+      where: { inativo: 0 },
       include: [
         { model: Cidade, attributes: ['nome'], as: 'cidadeData' },
         { model: Estado, attributes: ['nome'], as: 'estadoData' }
