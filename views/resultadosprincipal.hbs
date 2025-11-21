@@ -11,6 +11,25 @@
     <canvas id="meuGrafico" height="120"></canvas>
   </div>
 
+<div class="container my-4">
+  <div class="row justify-content-center text-center">
+    <div class="col-md-4 col-10 mb-3">
+      <div class="p-3 shadow rounded bg-light">
+        <h5 class="mb-1">Credibilidade</h5>
+        <span id="credibilidade" style="font-size: 1.6rem; font-weight: bold;"></span>
+      </div>
+    </div>
+
+    <div class="col-md-4 col-10 mb-3">
+      <div class="p-3 shadow rounded bg-light">
+        <h5 class="mb-1">Tempo decorrido</h5>
+        <span id="tempoTeste" style="font-size: 1.6rem; font-weight: bold;"></span>
+        <small> minutos</small>
+      </div>
+    </div>
+  </div>
+</div>
+
   <div class="container">
     <table id="table"
            class="table table-striped"
@@ -27,6 +46,25 @@
   </div>
 </div>
 
+<div class="container my-4">
+  <div class="row justify-content-center text-center">
+    <div class="col-md-4 col-10 mb-3">
+      <div class="p-3 shadow rounded bg-light">
+        <h5 class="mb-1">Credibilidade</h5>
+        <span id="credibilidade" style="font-size: 1.6rem; font-weight: bold;"></span>
+      </div>
+    </div>
+
+    <div class="col-md-4 col-10 mb-3">
+      <div class="p-3 shadow rounded bg-light">
+        <h5 class="mb-1">Tempo decorrido</h5>
+        <span id="tempoTeste" style="font-size: 1.6rem; font-weight: bold;"></span>
+        <small> minutos</small>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Scripts -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -34,7 +72,16 @@
 
 <script>
   // Dados da pessoa enviados pelo Handlebars
-  const teste = {{{json teste}}};
+  const teste = {{{ json teste }}};
+
+  const credibilidade = teste.totalb;
+  const dataInicio = new Date(teste.dataInicio);
+  const dataFim = new Date(teste.dataFim);
+
+  const tempoEmMinutos = ((dataFim - dataInicio) / 1000 / 60).toFixed(2);
+
+  document.getElementById("credibilidade").textContent = credibilidade;
+  document.getElementById("tempoTeste").textContent = tempoEmMinutos;
 
   // Configuração do gráfico
   const tipos = [
