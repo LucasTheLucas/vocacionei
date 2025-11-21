@@ -13,12 +13,6 @@
   <p><strong>Tempo realizado:</strong> <span id="tempoTeste"></span> minutos</p>
 </div>
 
-<!-- Resultados com barras de progresso -->
-<div class="container my-5">
-  <h3 class="text-center mb-4">Detalhes do seu teste</h3>
-  <div id="barrasProgresso"></div>
-</div>
-
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
   const credibilidade = JSON.parse(localStorage.getItem("credibilidade"));
@@ -73,21 +67,6 @@
   });
 
   document.getElementById("pessoa").textContent = descricao;
-
-  // Cria as barras de progresso
-  const container = document.getElementById("barrasProgresso");
-  filtro.forEach(t => {
-    const porcentagem = ((t.valor / 75) * 100).toFixed(1);
-    const div = document.createElement("div");
-    div.className = "tipo mb-3";
-    div.innerHTML = `
-      <div class="tipo-name">${t.tipo}: ${t.valor} (${porcentagem}%)</div>
-      <div class="progress">
-        <div class="progress-bar bg-${t.cor}" role="progressbar" style="width: ${porcentagem}%" aria-valuenow="${t.valor}" aria-valuemin="0" aria-valuemax="75"></div>
-      </div>
-    `;
-    container.appendChild(div);
-  });
 
   // Cria o gráfico
   const ctx = document.getElementById("meuGrafico").getContext("2d");
