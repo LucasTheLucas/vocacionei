@@ -1,3 +1,4 @@
+<!-- =============== FORMULÁRIO DE CADASTRO =============== -->
 <div class="container mt-5 py-5">
   <div class="card shadow p-4">
     <h2 class="mb-4">Cadastro</h2>
@@ -5,17 +6,25 @@
     <form action="/addaluno" method="POST" id="cadastroForm">
       <div class="mb-3">
         <label class="form-label">Nome</label>
-        <input type="text" class="form-control" name="nome" required />
+        <input type="text" class="form-control" name="nome"
+          required minlength="3" maxlength="60"
+          pattern="[A-Za-zÀ-ÿ\s]+"
+          title="Digite apenas letras (mínimo 3 caracteres)." />
       </div>
 
       <div class="row mb-3">
         <div class="col-md-6">
           <label class="form-label">Email</label>
-          <input type="email" class="form-control" name="email" required />
+          <input type="email" class="form-control" name="email"
+            required maxlength="70"
+            title="Digite um email válido." />
         </div>
+
         <div class="col-md-6">
           <label class="form-label">Contato</label>
-          <input type="text" class="form-control" name="contato" required />
+          <input type="text" class="form-control" name="contato"
+            required maxlength="15"
+            id="contato" placeholder="(00) 00000-0000" />
         </div>
       </div>
 
@@ -36,11 +45,16 @@
       <div class="row mb-3">
         <div class="col-md-6">
           <label class="form-label">Nome responsável</label>
-          <input type="text" class="form-control" name="responsavel" required />
+          <input type="text" class="form-control" name="responsavel"
+            required minlength="3" maxlength="60"
+            pattern="[A-Za-zÀ-ÿ\s]+"
+            title="Digite apenas letras (mínimo 3 caracteres)." />
         </div>
         <div class="col-md-6">
           <label class="form-label">Contato do responsável</label>
-          <input type="text" class="form-control" name="responsavelcontato" required />
+          <input type="text" class="form-control" name="responsavelcontato"
+            required maxlength="15"
+            id="responsavelcontato" placeholder="(00) 00000-0000" />
         </div>
       </div>
 
@@ -116,11 +130,15 @@
       <div class="row mb-3">
         <div class="col-md-6">
           <label class="form-label">Senha</label>
-          <input type="password" class="form-control" name="senha" id="senha" required />
+          <input type="password" class="form-control" name="senha" id="senha"
+            required minlength="6" maxlength="20"
+            pattern="^(?=.*[0-9])(?=.*[A-Za-z]).{6,20}$"
+            title="A senha deve ter de 6 a 20 caracteres, incluindo pelo menos um número e uma letra." />
         </div>
         <div class="col-md-6">
           <label class="form-label">Confirme a senha</label>
-          <input type="password" class="form-control" name="senhaconf" id="senhaconf" required />
+          <input type="password" class="form-control" name="senhaconf" id="senhaconf"
+            required minlength="6" maxlength="20" />
         </div>
       </div>
 
@@ -136,7 +154,9 @@
   </div>
 </div>
 
+<!-- ====== JAVASCRIPT DE VALIDAÇÃO E MÁSCARAS ====== -->
 <script>
+// Preenchimento automático se veio por URL
 function getParams() {
   const params = new URLSearchParams(window.location.search);
   return { login: params.get("login"), instituicao: params.get("instituicao"), serie: params.get("serie") };
@@ -157,6 +177,24 @@ window.addEventListener("DOMContentLoaded", () => {
   }
 });
 
+// Nome e nome responsável: não permite números
+document.querySelectorAll("input[name='nome'], input[name='responsavel']")
+  .forEach(campo => campo.addEventListener("input", () => {
+    campo.value = campo.value.replace(/[^A-Za-zÀ-ÿ\s]/g, "");
+  }));
+
+// Máscara para telefones (aluno e responsável)
+function maskTelefone(input) {
+  let v = input.value.replace(/\D/g, "");
+  v = v.replace(/^(\d{2})(\d)/, "($1) $2");
+  v = v.replace(/(\d{5})(\d)/, "$1-$2");
+  input.value = v.substring(0, 15);
+}
+
+document.getElementById("contato").addEventListener("input", function(){ maskTelefone(this); });
+document.getElementById("responsavelcontato").addEventListener("input", function(){ maskTelefone(this); });
+
+// SUBMIT com validação de senha
 document.getElementById("cadastroForm").addEventListener("submit", async function (e) {
   e.preventDefault();
 
