@@ -94,7 +94,7 @@ app.get("/resultados/:id", async (req, res) => {
     });
 
     if (!teste) {
-      return res.send("Teste não encontrada.");
+      return res.render("testesumiu");
     }
 
     res.render("resultadosprincipal", { teste });
