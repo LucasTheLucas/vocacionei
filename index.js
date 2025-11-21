@@ -89,7 +89,7 @@ app.get("/resultados/:id", async (req, res) => {
   try {
     const teste = await Teste.findOne({
       where: { idpessoa: id }, 
-      order: [['datahora', 'DESC']], 
+      order: [['dataInicio', 'DESC']], 
       raw: true
     });
 
