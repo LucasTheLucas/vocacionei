@@ -189,7 +189,7 @@ app.get("/cadinstituicao/:id", async (req, res) => {
   const instituicao = await Instituicao.findByPk(req.params.id, { raw: true });
 
   res.set('Cache-Control', 'no-store');
-  res.render("cadinstituicao", { instituicao, cidade, estado });
+  res.render("instituicao", { instituicao, cidade, estado });
 });
 
 app.post("/addinstituicao", async (req, res) => {
