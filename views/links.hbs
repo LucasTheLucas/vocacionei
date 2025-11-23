@@ -82,7 +82,7 @@
 
     // Verifica se ambos estão selecionados
     if (instValue !== "0" && serieValue !== "0") {
-      const link = `http://localhost:8081/cadastrar?instituicao=${instValue}&serie=${serieValue}`;
+      const link = `https://vocacionei-production.up.railway.app/cadastrar?instituicao=${instValue}&serie=${serieValue}`;
       gerarQR(link, false);
 
       btnAcessar.href = link;
