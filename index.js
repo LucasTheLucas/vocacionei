@@ -188,6 +188,7 @@ app.post("/addinstituicao", async (req, res) => {
   const { nome, rua, bairro, idestado, idcidade } = req.body;
   if (!nome || !idestado) return res.send("Preencha todos os campos obrigatórios.");
   await Instituicao.create({ nome, rua, bairro, idestado, idcidade });
+  res.set('Cache-Control', 'no-store');
   res.redirect("/listainstituicao");
 });
 
