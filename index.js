@@ -170,26 +170,22 @@ app.get("/slides/:id", async (req, res) => {
 
 
 // --- ROTAS - INSTITUIÇÃO ---
-app.get("/cadinstituicao/:id?", async (req, res) => {
-  const cidade = await Cidade.findAll({ raw: true });
-  const estado = await Estado.findAll({ raw: true });
-
-  let instituicao = null;
-  if (req.params.id) {
-    instituicao = await Instituicao.findByPk(req.params.id, { raw: true });
-  }
-
-  res.set('Cache-Control', 'no-store');
-  res.render("cadinstituicao", { instituicao, cidade, estado });
-});
-
 app.get("/cadinstituicao", async (req, res) => {
   const cidade = await Cidade.findAll({ raw: true });
   const estado = await Estado.findAll({ raw: true });
 
   res.set('Cache-Control', 'no-store');
-
   res.render("cadinstituicao", { instituicao: null, cidade, estado });
+});
+
+// Com ID (editar)
+app.get("/cadinstituicao/:id", async (req, res) => {
+  const cidade = await Cidade.findAll({ raw: true });
+  const estado = await Estado.findAll({ raw: true });
+  const instituicao = await Instituicao.findByPk(req.params.id, { raw: true });
+
+  res.set('Cache-Control', 'no-store');
+  res.render("cadinstituicao", { instituicao, cidade, estado });
 });
 
 app.post("/addinstituicao", async (req, res) => {
@@ -211,7 +207,7 @@ app.post("/editarInstituicao/:id", async (req, res) => {
 app.get("/excluirInstituicao/:id", async (req, res) => {
   try {
     const id = req.params.id;
-    await Instituicao.update({ inativo: true }, { where: { id } });
+    await Instituicao.update({ inativo: 1 }, { where: { id } });
     res.redirect("/listainstituicao")
   } catch (err) {
     console.error(err);
@@ -226,7 +222,7 @@ app.get("/listainstituicao", async (req, res) => {
 app.get("/links", async (req, res) =>
   {
     const instituicoes = await Instituicao.findAll({
-      where: { inativo: false },
+      where: { inativo: 0 },
       include: [
         { model: Cidade, attributes: ['nome'], as: 'cidadeData' },
         { model: Estado, attributes: ['nome'], as: 'estadoData' }
