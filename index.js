@@ -170,18 +170,26 @@ app.get("/slides/:id", async (req, res) => {
 
 
 // --- ROTAS - INSTITUIÇÃO ---
-app.get("/cadinstituicao/:id", async (req, res) => {
-  const id = req.params.id;
-  const instituicao = await Instituicao.findOne({ raw: true, where: { id } });
+app.get("/cadinstituicao/:id?", async (req, res) => {
   const cidade = await Cidade.findAll({ raw: true });
   const estado = await Estado.findAll({ raw: true });
-  res.render("instituicao", { instituicao, cidade, estado });
+
+  let instituicao = null;
+  if (req.params.id) {
+    instituicao = await Instituicao.findByPk(req.params.id, { raw: true });
+  }
+
+  res.set('Cache-Control', 'no-store');
+  res.render("cadinstituicao", { instituicao, cidade, estado });
 });
 
 app.get("/cadinstituicao", async (req, res) => {
   const cidade = await Cidade.findAll({ raw: true });
   const estado = await Estado.findAll({ raw: true });
-  res.render("instituicao", { instituicao: null, cidade, estado });
+
+  res.set('Cache-Control', 'no-store');
+
+  res.render("cadinstituicao", { instituicao: null, cidade, estado });
 });
 
 app.post("/addinstituicao", async (req, res) => {
