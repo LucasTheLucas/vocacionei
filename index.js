@@ -77,7 +77,11 @@ app.get("/", (req, res) => {
 });
 app.get("/cadastrar", async (req, res) => {
   const estado = await Estado.findAll({ raw: true });
-  const instituicao = await Instituicao.findAll({ raw: true });
+  const instituicao = await Instituicao.findAll(
+    {
+      where: { inativo: 0 }, 
+      raw: true 
+    });
   const cidade = await Cidade.findAll({ raw: true });
   res.render("formulario", { estado, instituicao, cidade });
 });
