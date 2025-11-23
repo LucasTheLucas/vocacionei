@@ -179,7 +179,7 @@ app.get("/cadinstituicao", async (req, res) => {
   const estado = await Estado.findAll({ raw: true });
 
   res.set('Cache-Control', 'no-store');
-  res.render("cadinstituicao", { instituicao: null, cidade, estado });
+  res.render("instituicao", { instituicao: null, cidade, estado });
 });
 
 // Com ID (editar)
