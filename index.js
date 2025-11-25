@@ -17,6 +17,8 @@ const sequelize = require("./models/Db.js");
 const PDFDocument = require("pdfkit");
 const PORT = process.env.PORT || 3000;
 
+const bcrypt = require("bcrypt");
+
 require("pdfkit-table");
 
 // --- FAVICON ---
@@ -55,9 +57,15 @@ app.post("/logar", async (req, res) => {
   const { email, senha } = req.body;
 
   try {
-    const pessoa = await Pessoa.findOne({ where: { email, senha } });
+    const pessoa = await Pessoa.findOne({ where: { email } });
 
     if (!pessoa) {
+      return res.json({ success: false, message: "E-mail ou senha incorretos" });
+    }
+
+    const senhaValida = await bcrypt.compare(senha, pessoa.senha);
+
+    if (!senhaValida) {
       return res.json({ success: false, message: "E-mail ou senha incorretos" });
     }
 
@@ -267,7 +275,10 @@ app.get("/listarinstituicao", async (req, res) => {
 });
 
 // --- ROTAS - PESSOAS ---
-app.post("/addaluno", (req, res) => {
+app.post("/addaluno", async (req, res) => {
+
+  const hash = await bcrypt.hash(req.body.senha, 10);
+
   Pessoa.create({
     nome: req.body.nome,
     sexo: req.body.genero,
@@ -280,7 +291,7 @@ app.post("/addaluno", (req, res) => {
     idestado: req.body.estado,
     idcidade: req.body.idcidade,
     email: req.body.email,
-    senha: req.body.senha,
+    senha: hash,
     contato: req.body.contato,
     nomeresponsavel: req.body.responsavel,
     contatoresponsavel: req.body.responsavelcontato,
